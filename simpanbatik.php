@@ -203,6 +203,19 @@
         var collectKeliling = [];
         var numOfMotif = [];
 
+
+        // var getWidth = document.getElementsByClassName("first-motif")[0];
+        // // var getPath = getWidth.getElementsByTagName("path")[0].getTotalLength();
+        // var getPath = getWidth.getElementsByTagName("path")[0];
+        // var width = getWidth.getBBox().width;
+        // console.log(width);
+        // // var perimeter = getPath * width;
+        // // console.log(perimeter);
+        // var getRealWidth = getPath.getBoundingClientRect().width / getPath.getBBox().width;
+
+        // var perimeter = getPath.getTotalLength() * getRealWidth;
+        // console.log(perimeter * 0.02645833);
+
         for (i = 0 ; i < motifJml; i++){
             
             // jlh motif
@@ -213,7 +226,13 @@
             var motifSample = document.getElementsByClassName(allMotifClass[i])[0];
 
             // keliling motif
-            var keliling = motifSample.getElementsByTagName("path")[0].getTotalLength();
+            var getPath = motifSample.getElementsByTagName("path")[0];
+            var bboxWidth = motifSample.getBBox().width;
+            var bcWidth = getPath.getBoundingClientRect().width;
+            
+            var scaleNum = bcWidth / bboxWidth;
+
+            var keliling = getPath.getTotalLength() * scaleNum;
             collectKeliling.push(keliling);
            
         }
