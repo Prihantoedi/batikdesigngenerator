@@ -1,0 +1,32 @@
+
+
+#header{
+    text-align:center;
+    margin:35px auto 65px;
+}
+h1{
+    margin-bottom:5px;
+}
+table{
+    margin: auto;
+    
+}
+
+.table {
+    border-collapse: separate;
+    border-spacing:0 20px;
+}
+.nomor-urut{
+    text-align:center;
+}
+object{
+    width:550px;
+    padding:15px;
+    border: solid grey 0.5px;
+}
+.cetakkarakter{
+    width:150px;
+}
+.titikdua{
+    padding:5px;
+}

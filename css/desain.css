@@ -1,0 +1,252 @@
+body{
+    font-family: 'Ubuntu', sans-serif;
+    font-family: 'Varela Round', sans-serif;
+    color: #fff;
+}
+
+
+.sidebar-container {
+    vertical-align: top;
+    height: 100%; 
+    width: 250px; /* Set the width of the sidebar */
+    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+    top: 0; /* Stay at the top */
+    left: 0;
+    /* background-color: #f2f3f7; */
+    background-color: #282c33;
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 20px;
+    box-shadow: 5px 5px 15px 0px #818181;
+    font-size: 15px;
+}
+.sidebar{
+    text-align: center;
+}
+a{
+    text-decoration: none;
+}
+.form-dasar{
+    width:150px;
+    margin: 7px auto;
+}
+.sidebar table{
+    margin: auto;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+.sidebar button{
+    margin: 5px;
+}
+
+#psession, #colorsession{
+    background-color: #282c33;
+}
+
+#psession:hover, #colorsession:hover{
+    background-color: #1c1f24;
+}
+
+form{
+    margin:auto;
+    text-align: center;
+}
+label{
+    margin:auto;
+    text-align: center;
+}
+table{
+    margin:auto;
+    margin-bottom:25px;
+    text-align:left;
+}
+#header-web-app{
+    /* color: #3f3f3f; */
+    color: #fff;
+    text-align: center;
+    text-transform: uppercase;
+    margin:0;
+}
+.main{
+    margin-left: 250px; 
+    padding: 15px;
+    vertical-align: top;
+}
+#hasilBatik, #hasilBatikHp{
+    /* border:solid black 2px; */
+    width:fit-content;
+    height:fit-content;
+    margin: auto;
+    margin-top:50px;
+    text-align:center;
+    
+}
+
+
+
+.header-main{
+    margin:auto;
+    text-align:center;
+    width:50%;
+}
+.inputhidden{
+    height: 0px;
+    width: 0px;
+    margin:0px;
+    padding:0px;
+    visibility: hidden;
+    border: 0px;
+}
+.head-sidebar-row{
+    text-align:center;
+    margin: 20px auto;
+    margin-left:15px;
+    width:250px;
+    height:115px;
+    margin:0px;
+    padding: auto;
+    padding-top:15px;
+}
+.head-sidebar-column{
+    width:80px;
+    margin: auto;
+    float:left;
+    
+}
+
+
+.motifterpilih{
+    height:65;
+    background-color: #282c33;
+}
+
+.motifterpilih:hover{
+    background-color: #14161a;
+    transition: 0.5s;
+}
+
+.hapusmotifterpilih{
+    height:15;
+}
+
+.hapusmotifterpilih:hover{
+    background-color: rgb(226, 114, 21);
+    transition: 0.5s;
+}
+
+
+.labelhapusmotifterpilih{
+    height:15px;
+    margin:0px;
+}
+.phapusmotifterpilih{
+    height:15px;
+    margin:0px;
+}
+
+
+#addmotif-btn{
+    cursor: pointer;
+}
+
+#savebutton{
+    width:250;
+    margin: 0 auto;
+}
+#panduanpenggunaan{
+    margin-left:25px;
+    color:#333;
+}
+li{
+    margin-top:10px;
+}
+
+.colortab{
+    display:none;
+    padding-bottom: 50px;
+}
+
+#save-bridge{
+    width: 100px;
+    background-color: #51db23;
+    border-radius: 7px;
+    cursor: pointer;
+    margin: auto;
+    padding: 10px;
+    color: #fff;
+}
+
+.save-page{
+    top: 0;
+    position: fixed; 
+    margin-left: -8px;
+    width: 100%;
+    height: 100%;    
+    background-color: rgba(0,0,0,0.5);
+    display: none;
+
+}
+
+.save-page #save-form{
+    margin: auto;
+    margin-top: 50px;
+    width: 500px;
+    height:350px;
+    background-color: #fff;
+    opacity: 1;
+    border: 1px;
+    border-radius: 10px;
+}
+
+#save-form #save-data{
+    line-height: 30px;
+    padding-top: 30px;
+    /* border: 1px #000 solid; */
+}
+
+.decision{
+    display:inline-block; 
+    width: 20em; 
+    margin-top: 20px; 
+    margin-bottom: 30px;
+    
+
+}
+#saveButton{
+    display: inline;
+    cursor:pointer; 
+    padding: 10px; 
+    border-radius: 5px;
+    background-color: #10972d;
+    border: none;
+    color: #fff;
+    margin-left: 10px;
+}
+
+#saveButton:hover{
+    -webkit-box-shadow: 0px 2px 6px 1px #000000; 
+    box-shadow: 0px 2px 6px 1px #000000;
+    background-color: #074b16;
+    transition: 0.5s;
+}
+
+.decision #cancel-btn{
+    display: inline;
+    padding: 10px;
+    border-radius: 5px; 
+    cursor:pointer;
+    background-color: #ff621f;
+    color: #fff;
+}
+
+select{
+    background: #191c20;
+    color: #fff;
+}
+
+select option{
+    background: #191c20;
+    color: #fff;
+}
+
+

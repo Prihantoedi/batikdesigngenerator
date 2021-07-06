@@ -1,0 +1,50 @@
+h1{
+    text-align:center;
+    text-decoration:underline;
+    color: #3f3f3f;
+    text-transform: uppercase;
+}
+.column {
+    width: 270px;
+    height: 580px;
+    margin:2.5px;
+    padding: 10px;
+    float:left;
+    text-align:center;
+    border:solid darkgrey 1px;
+}        
+.motif-container {
+    width : 960px;
+    margin: auto;
+    padding: auto;
+}
+.motif-gambar{
+    height: 270px;
+    margin-top: 15px;
+    text-align:center;
+    height: fit-content;
+    margin-bottom: 35px;
+}
+.motif-row{
+    width:912px;
+    height:fit-content;
+    margin:auto;
+}
+table ,td{
+    text-align:left;
+    font-size:100%;
+    border:solid lightgrey .5px;
+}
+td{
+    padding:10px;
+}
+td.karakter{
+    height:210px;
+}
+#search{
+    width:fit-content;
+    padding:25px 100px;
+    border:solid #a5a5a5 1px;
+    margin:15px auto 30px;
+    text-align: center;
+}

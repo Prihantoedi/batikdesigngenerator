@@ -1,0 +1,46 @@
+/* The sidebar menu */
+.sidebar-container {
+	vertical-align: top;
+  height: 100%; 
+  width: 250px; /* Set the width of the sidebar */
+  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+  top: 0; /* Stay at the top */
+  left: 0;
+  background-color: #f2f3f7; /* Black */
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 20px;
+  box-shadow: 5px 5px 15px 0px #818181;
+  font-size: 15px;
+}
+
+.sidebar{
+  text-align: center;
+}
+.sidebar table{
+  margin: auto;
+  margin-top: 15px;
+  margin-bottom: 10px
+}
+
+.sidebar button{
+  margin: 5px;
+}
+
+.main{
+  margin-left: 250px; 
+  padding: 15px;
+	vertical-align: top;
+}
+
+
+
+p{
+  padding-left: .5em;
+}
+
+div.file-setting{
+  padding: .5em;
+}
+
+
+

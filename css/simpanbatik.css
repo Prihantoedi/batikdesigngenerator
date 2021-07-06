@@ -1,0 +1,25 @@
+body{
+    text-align:center;
+    font-family: 'Ubuntu', sans-serif;
+    font-family: 'Varela Round', sans-serif;
+}
+a{
+    text-align:left;
+    height:0px;
+    margin:0px;
+    text-decoration: none;
+    background-color: rgba(0, 140, 255, 0.822);
+    padding: 10px;
+    color: #fff;
+    border-radius: 7px;
+}
+form{
+    margin:15px auto 15px;
+    border:solid grey 1px;
+    width:fit-content;
+    padding:5px 15px 15px ;
+}
+table{
+    margin:15px auto;
+    text-align:left;
+}
