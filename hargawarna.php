@@ -7,6 +7,10 @@
     }
 
     if (isset($_SESSION['harga_yellowigk'])) {
+        unset($_SESSION['harga_yellowigk']);
+    }
+
+    if (isset($_SESSION['harga_yellowirk'])) {
         unset($_SESSION['harga_yellowirk']);
     }
 
@@ -67,7 +71,7 @@
     // Blue 04B
     $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 5") or die(mysqli_error($conn));
     $hargaBlue048 = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_hargablue048'] = $hargaBlue048['harga'];
+    $_SESSION['harga_blue048'] = $hargaBlue048['harga'];
 
     // Grey IRL
     $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 6") or die(mysqli_error($conn));
