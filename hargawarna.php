@@ -290,7 +290,7 @@
                         </div>
                         <div class="col-3">
                             <!-- Hijau -->
-                            <h2 class="h5">Harga Warna <span class="h5" style="color: green;">Hijau</span></h2>
+                            <h2 class="h5">Harga Warna <span class="h5" style="color: #b23424;">Orange HR</span></h2>
 
                             <form method="post" action="processhargawarna.php?id=3">
                                 <div class="form-group w-100">
