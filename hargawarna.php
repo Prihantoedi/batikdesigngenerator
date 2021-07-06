@@ -6,79 +6,93 @@
         echo "<script>window.location = 'login.php'</script>";
     }
 
-    if (isset($_SESSION['harga_ungu'])) {
-        unset($_SESSION['harga_ungu']);
+    if (isset($_SESSION['harga_yellowigk'])) {
+        unset($_SESSION['harga_yellowirk']);
     }
 
-    if (isset($_SESSION['harga_merah'])) {
-        unset($_SESSION['harga_merah']);
+    if (isset($_SESSION['harga_orangehr'])) {
+        unset($_SESSION['harga_orangehr']);
     }
 
-    if (isset($_SESSION['harga_hijau'])) {
-        unset($_SESSION['harga_hijau']);
+    if (isset($_SESSION['harga_brownirrd'])) {
+        unset($_SESSION['harga_brownirrd']);
     }
 
-    if (isset($_SESSION['harga_kuning'])) {
-        unset($_SESSION['harga_kuning']);
+    if (isset($_SESSION['harga_blue04b'])) {
+        unset($_SESSION['harga_blue04b']);
     }
 
-    if (isset($_SESSION['harga_coklat'])) {
-        unset($_SESSION['harga_coklat']);
+    if (isset($_SESSION['harga_greyirl'])) {
+        unset($_SESSION['harga_greyirl']);
     }
 
-    if (isset($_SESSION['harga_biru'])) {
-        unset($_SESSION['harga_biru']);
+    if (isset($_SESSION['harga_violet14r'])) {
+        unset($_SESSION['harga_violet14r']);
     }
 
-    if (isset($_SESSION['harga_orange'])) {
-        unset($_SESSION['harga_orange']);
+    if (isset($_SESSION['harga_roseir'])) {
+        unset($_SESSION['harga_roseir']);
     }
 
-    if (isset($_SESSION['harga_abu'])) {
-        unset($_SESSION['harga_abu']);
+    if (isset($_SESSION['harga_greenib'])) {
+        unset($_SESSION['harga_greenib']);
+    }
+
+    if (isset($_SESSION['harga_putih'])) {
+        unset($_SESSION['harga_putih']);
     }
 
     $conn = mysqli_connect("localhost", "root", "", "database_batik_galih");
     
-    // Ungu
+    // Yellow IGK
     $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 1") or die(mysqli_error($conn));
-    $hargaUngu = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_ungu'] = $hargaUngu['harga'];
+    $hargaYellowIGK = mysqli_fetch_assoc($sql);
+    $_SESSION['harga_yellowigk'] = $hargaYellowIGK['harga'];
 
-    // Merah
+    // Yellow IRK
     $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 2") or die(mysqli_error($conn));
-    $hargaMerah = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_merah'] = $hargaMerah['harga'];
+    $hargaYellowIRK = mysqli_fetch_assoc($sql);
+    $_SESSION['harga_yellowirk'] = $hargaYellowIRK['harga'];
 
-    // Hijau
+    // ORange HR
     $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 3") or die(mysqli_error($conn));
-    $hargaHijau = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_hijau'] = $hargaHijau['harga'];
+    $hargaOrangeHR = mysqli_fetch_assoc($sql);
+    $_SESSION['harga_orangehr'] = $hargaOrangeHR['harga'];
 
-    // Kuning
+    //Brown IRRD
     $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 4") or die(mysqli_error($conn));
-    $hargaKuning = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_kuning'] = $hargaKuning['harga'];
+    $hargaBrownIRRD = mysqli_fetch_assoc($sql);
+    $_SESSION['harga_brownirrd'] = $hargaBrownIRRD['harga'];
 
-    // Coklat
+    // Blue 04B
     $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 5") or die(mysqli_error($conn));
-    $hargaCoklat = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_coklat'] = $hargaCoklat['harga'];
+    $hargaBlue048 = mysqli_fetch_assoc($sql);
+    $_SESSION['harga_hargablue048'] = $hargaBlue048['harga'];
 
-    // Biru
+    // Grey IRL
     $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 6") or die(mysqli_error($conn));
-    $hargaBiru = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_biru'] = $hargaBiru['harga'];
+    $hargaGreyIRL = mysqli_fetch_assoc($sql);
+    $_SESSION['harga_greyirl'] = $hargaGreyIRL['harga'];
 
-    // Orange
+    // Violet 14R
     $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 7") or die(mysqli_error($conn));
-    $hargaOrange = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_orange'] = $hargaOrange['harga'];
+    $hargaViolet14R = mysqli_fetch_assoc($sql);
+    $_SESSION['harga_violet14r'] = $hargaViolet14R['harga'];
 
-    // Abu-abu
+    // Rose IR
     $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 8") or die(mysqli_error($conn));
-    $hargaAbu = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_abu'] = $hargaAbu['harga'];
+    $hargaRoseIR = mysqli_fetch_assoc($sql);
+    $_SESSION['harga_roseir'] = $hargaRoseIR['harga'];
+
+    // Green IB
+    $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 9") or die(mysqli_error($conn));
+    $hargaGreenIB = mysqli_fetch_assoc($sql);
+    $_SESSION['harga_greenib'] = $hargaGreenIB['harga'];
+
+     // Putih
+    $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 10") or die(mysqli_error($conn));
+    $hargaPutih = mysqli_fetch_assoc($sql);
+    $_SESSION['harga_putih'] = $hargaPutih['harga'];
 
 ?>
 
@@ -253,15 +267,15 @@
                     <!-- Page Heading -->
                     <h1 class="h3 mb-5 text-gray-800">Kelola Harga Warna</h1>
 
-                    <div class="row">
+                    <div class="row" style="margin-top: 30px;">
                         <div class="col-3">
                             <!-- Ungu -->
-                            <h2 class="h5">Harga Warna <span class="h5" style="color: #7f732a;">Yellow IGK</span></h2>
+                            <h2 class="h5">Harga Warna <span class="h5" style="color: #cc8621;">Yellow IGK</span></h2>
 
                             <form method="post" action="processhargawarna.php?id=1">
                                 <div class="form-group w-100">
                                     <label for="exampleInputEmail1">Harga Lama</label>
-                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_ungu']?>" readonly>
+                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_yellowigk']?>" readonly>
                                     <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
                                 </div>
                                 <div class="form-group w-100">
@@ -273,12 +287,12 @@
                         </div>
                         <div class="col-3">
                             <!-- Merah -->
-                            <h2 class="h5">Harga Warna <span class="h5" style="color: #b23424;">Yellow IRK</span></h2>
+                            <h2 class="h5">Harga Warna <span class="h5" style="color: #7f732a;">Yellow IRK</span></h2>
 
                             <form method="post" action="processhargawarna.php?id=2">
                                 <div class="form-group w-100">
                                     <label for="exampleInputEmail1">Harga Lama</label>
-                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_merah']?>" readonly>
+                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_yellowirk']?>" readonly>
                                     <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
                                 </div>
                                 <div class="form-group w-100">
@@ -295,7 +309,7 @@
                             <form method="post" action="processhargawarna.php?id=3">
                                 <div class="form-group w-100">
                                     <label for="exampleInputEmail1">Harga Lama</label>
-                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_hijau']?>" readonly>
+                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_orangehr']?>" readonly>
                                     <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
                                 </div>
                                 <div class="form-group w-100">
@@ -307,12 +321,12 @@
                         </div>
                         <div class="col-3">
                             <!-- Kuning -->
-                            <h2 class="h5">Harga Warna <span class="h5" style="color: yellow; background-color: rgb(0, 0, 0, 0.5);">Kuning</span></h2>
+                            <h2 class="h5">Harga Warna <span class="h5" style="color: #7a5844;">Brown IRRD</span></h2>
 
                             <form method="post" action="processhargawarna.php?id=4">
                                 <div class="form-group w-100">
                                     <label for="exampleInputEmail1">Harga Lama</label>
-                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_kuning']?>" readonly>
+                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_brownirrd']?>" readonly>
                                     <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
                                 </div>
                                 <div class="form-group w-100">
@@ -324,17 +338,16 @@
                         </div>
                     </div>
 
-                    <br>
 
-                    <div class="row">
+                    <div class="row" style="margin-top: 30px;">
                         <div class="col-3">
                             <!-- coklat -->
-                            <h2 class="h5">Harga Warna <span class="h5" style="color: brown;">Coklat</span></h2>
+                            <h2 class="h5">Harga Warna <span class="h5" style="color: #2e4c66;">Blue 04B</span></h2>
 
                             <form method="post" action="processhargawarna.php?id=5">
                                 <div class="form-group w-100">
                                     <label for="exampleInputEmail1">Harga Lama</label>
-                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_coklat']?>" readonly>
+                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_blue04b']?>" readonly>
                                     <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
                                 </div>
                                 <div class="form-group w-100">
@@ -346,12 +359,12 @@
                         </div>
                         <div class="col-3">
                             <!-- Biru -->
-                            <h2 class="h5">Harga Warna <span class="h5" style="color: blue;">Biru</span></h2>
+                            <h2 class="h5">Harga Warna <span class="h5" style="color: #434f5b;">Grey IRL</span></h2>
 
                             <form method="post" action="processhargawarna.php?id=6">
                                 <div class="form-group w-100">
                                     <label for="exampleInputEmail1">Harga Lama</label>
-                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_biru']?>" readonly>
+                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_greyirl']?>" readonly>
                                     <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
                                 </div>
                                 <div class="form-group w-100">
@@ -363,12 +376,12 @@
                         </div>
                         <div class="col-3">
                             <!-- Orange -->
-                            <h2 class="h5">Harga Warna <span class="h5" style="color: orange;">Orange</span></h2>
+                            <h2 class="h5">Harga Warna <span class="h5" style="color: #2e1836;">Violet 14R</span></h2>
 
                             <form method="post" action="processhargawarna.php?id=7">
                                 <div class="form-group w-100">
                                     <label for="exampleInputEmail1">Harga Lama</label>
-                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_orange']?>" readonly>
+                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_violet14r']?>" readonly>
                                     <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
                                 </div>
                                 <div class="form-group w-100">
@@ -380,12 +393,33 @@
                         </div>
                         <div class="col-3">
                             <!-- Abu-abu -->
-                            <h2 class="h5">Harga Warna <span class="h5" style="color: grey;">Abu - abu</span></h2>
+                            <h2 class="h5">Harga Warna <span class="h5" style="color: #d3547b;">Rose IR</span></h2>
 
                             <form method="post" action="processhargawarna.php?id=8">
                                 <div class="form-group w-100">
                                     <label for="exampleInputEmail1">Harga Lama</label>
-                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_abu']?>" readonly>
+                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_roseir']?>" readonly>
+                                    <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+                                </div>
+                                <div class="form-group w-100">
+                                    <label for="exampleInputPassword1">Harga Baru</label>
+                                    <input type="number" class="form-control" id="exampleInputPassword1" min="1" name="hargaBaru" placeholder="Masukkan Harga Baru" required>
+                                </div>
+                                <button type="submit" name="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="row" style="margin-top: 30px;">
+                        <div class="col-3">
+                                <!-- Abu-abu -->
+                            <h2 class="h5">Harga Warna <span class="h5" style="color: #143d30;">Green IB</span></h2>
+
+                            <form method="post" action="processhargawarna.php?id=8">
+                                <div class="form-group w-100">
+                                    <label for="exampleInputEmail1">Harga Lama</label>
+                                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_greenib']?>" readonly>
                                     <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
                                 </div>
                                 <div class="form-group w-100">
@@ -396,6 +430,7 @@
                             </form>
                         </div>
                     </div>
+
 
                 </div>
                 <!-- /.container-fluid -->
