@@ -23,6 +23,7 @@
         exit;
     }
 
+    // die($_SESSION['colorchange']);
     $motifJml = count($_SESSION['motif_id']);
     $warnaBg = $_SESSION['colorBg'];
     $warna1 = $_SESSION['color1'];
@@ -229,7 +230,7 @@
             var getPath = motifSample.getElementsByTagName("path")[0];
             var bboxWidth = motifSample.getBBox().width;
             var bcWidth = getPath.getBoundingClientRect().width;
-            
+
             var scaleNum = bcWidth / bboxWidth;
 
             var keliling = getPath.getTotalLength() * scaleNum;
@@ -237,7 +238,7 @@
            
         }
         
-        console.log(collectKeliling);
+        // console.log(collectKeliling);
 
         // input ke form
         var inKeliling = document.getElementById("collect-keliling");
@@ -256,6 +257,7 @@
         }
         
         var dataWarnaId = document.getElementById("data-warna");
+        console.log(dataWarna);
         dataWarnaId.setAttribute("value", dataWarna);
         
         

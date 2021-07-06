@@ -18,12 +18,27 @@
 
         if($_POST['submit'] == 0 || $_POST['submit'] == 2){
             // GANTI MOTIF
+            
             $_SESSION['motif_indeks'] = $_POST['motif_indeks'];
+            print_r($_SESSION['motif_indeks']);
             header("location: katalogpilih.php");
             exit;
         } elseif($_POST['submit'] == 1){
             // HAPUS MOTIF
+            // if($_POST['motifindeks'] == 1){
+
+            // }
+
+            // Handling apabila ada penghapusan motif, deteksi jumlah warna yang digunakan harus di update
+            if (count($_SESSION['motif_id']) == 2 || count($_SESSION['motif_id']) == 1){
+                $_SESSION['colorchange'] = "0,0";
+            } else {
+                $_SESSION['colorchange'] = "1,0";
+            }
+
             array_splice($_SESSION['motif_id'],$_POST['motif_indeks'],1);
+            // die(print_r($_SESSION['motif_id']));
+            
         } elseif($_POST['submit'] == 3){
             // SIMPAN BATIK
             header("Location: simpanbatik.php");      

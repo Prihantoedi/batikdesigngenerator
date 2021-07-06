@@ -57,7 +57,7 @@
     
     $kelilingString    = explode("," , $_SESSION['keliling']);
     $totalMotifString = explode("," , $_SESSION['totalmotif']);
-    die(print_r($kelilingString));
+    // die(print_r($kelilingString));
 
     // String to Number
     $keliling = [];
@@ -73,9 +73,21 @@
     }
 
     $durasi = 0;
-    for($d = 0; $d < count($keliling); $d++){
-        $durasi = $durasi + $keliling[$d] * $totalMotif[$d];
+
+
+    if ($teknik == "Colet"){
+        // die("Colet");
+        for($d = 0; $d < count($keliling); $d++){
+            $durasi = $durasi + (($keliling[$d] * 2) * $totalMotif[$d]);
+        }
+    } else{
+        for($d = 0; $d < count($keliling); $d++){
+            $durasi = $durasi + $keliling[$d] * $totalMotif[$d];
+        }
     }
+
+    // die($durasi. "   <-");
+
 
     // 1000 mm per menit = 100 cm per menit 
     // dibagi 10
@@ -87,6 +99,9 @@
 
     $durasiJam = $durasiMenit / 60; 
     $durasiHari = ceil($durasiJam / 8); // roundup
+    
+
+    // die($durasiHari . " durasi Hari");
 
     $conn = mysqli_connect("localhost", "root", "", "database_batik_galih");
 
@@ -111,15 +126,18 @@
 
     // CARI HARGA WARNA
 
-
+    // die($_SESSION['datawarna']);
     $datawarnasession = explode("," , $_SESSION['datawarna']);
+    // die(print_r($datawarnasession));
     $checkingWarna = [$warnabg];
     $checkingWarna2 = [$warnabg];
 
+    
     for($c = 0; $c < count($datawarnasession); $c++){
         array_push($checkingWarna, hexToColor($datawarnasession[$c]));
         array_push($checkingWarna2, hexToColor($datawarnasession[$c]));
     }
+    // die(print_r($checkingWarna));
 
     $jenisWarna1 = $warna1;
     $jenisWarna2 = $warna2;
@@ -160,7 +178,7 @@
         }    
     }
 
-    // die($hargaWarna . " harga");
+    
 
     
 
@@ -200,7 +218,7 @@
 
     // Cari Harga Total
     $harga = $hargaWarna + $hargaTeknik + $hargaDurasi + $hargaLuas;
-    die($harga . " harga");
+
     $_SESSION['totalHarga'] = $harga;
     $_SESSION['hargaWarna'] = $hargaWarna;
     $_SESSION['hargaTeknik'] = $hargaTeknik;
@@ -225,12 +243,15 @@
         $durasiHari= $durasiHari + ($durasiSebelumnya - $interval);
     }
 
+    // die($durasiHari. " hari");
+    
     // tambahan durasi untuk teknik
     if($teknik == "Celup"){
-        die("Stop here");
         $durasiHari = $durasiHari + $dihitung;
-    }
-    die($durasiHari);
+    } 
+
+    // die($durasiHari . " dihitung");
+
     $_SESSION['durasi'] = $durasiHari . " hari";
 
     // Cari delivery time
