@@ -86,6 +86,8 @@
         }
     }
 
+    
+
     // die($durasi. "   <-");
 
 
@@ -123,6 +125,8 @@
     if ($member == "baru") {
         $hargaDurasi = ceil($durasiMenit * $hargaMemberBaru);
     }
+
+    
 
     // CARI HARGA WARNA
 
@@ -197,13 +201,16 @@
     }
     else if ($teknik == "Colet") {
         $id = "2";
-        $query = "SELECT * FROM harga_teknik WHERE id = $id";
-        $sql = mysqli_query($conn, $query) or die(mysqli_error($conn));
-        $dataHargaTeknik = mysqli_fetch_assoc($sql);
-        $hargaTeknik2 = $dataHargaTeknik['harga'];
-
-        $hargaTeknik = $hargaTeknik + $hargaTeknik2;
-        $jenisTeknik = $dataHargaTeknik['jenis'];
+        // $query = "SELECT * FROM harga_teknik WHERE id = $id";
+        // $sql = mysqli_query($conn, $query) or die(mysqli_error($conn));
+        // $dataHargaTeknik = mysqli_fetch_assoc($sql);
+        // $hargaTeknik2 = $dataHargaTeknik['harga'];
+        $hargaTeknik = $hargaDurasi /2;
+        $hargaDurasi = $hargaDurasi /2;
+        // die($hargaDurasi . " harga");
+        // $hargaTeknik = $hargaTeknik + $hargaTeknik2;
+        // $jenisTeknik = $dataHargaTeknik['jenis'];
+        $jenisTeknik = $teknik;
     }
 
     // Cari luas untuk menghitung harga berdasarkan luas (Rp. 1.5/cm2)
