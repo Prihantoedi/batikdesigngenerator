@@ -214,23 +214,26 @@
     }
 
     // Cari luas untuk menghitung harga berdasarkan luas (Rp. 1.5/cm2)
+   
     $luas = $widthCanv * $heightCanv;
-    $luas = $luas / 10000;
-    $luas = round($luas * 2) / 2;
-    $luas = $luas * 10000;
+    // $luas = $luas / 10000;
+    // $luas = round($luas * 2) / 2;
+    // $luas = $luas * 10000;
 
     // Cari hargaLuas
-    $hargaLuas = $hargaLuas + (1.5 * $luas);
-    $hargaLuas = $hargaLuas * $jumlah;
+    $sql = mysqli_query($conn, "SELECT * FROM harga_kain WHERE id = 1") or die(mysqli_error($conn));
+    $harga_kain_per_meter = mysqli_fetch_assoc($sql)['harga'];
+    // $hargaLuas = $hargaLuas + (1.5 * $luas);
+    $hargaKain = $luas * $harga_kain_per_meter * $jumlah;
 
     // Cari Harga Total
-    $harga = $hargaWarna + $hargaTeknik + $hargaDurasi + $hargaLuas;
+    $harga = $hargaWarna + $hargaTeknik + $hargaDurasi + $hargaKain;
 
     $_SESSION['totalHarga'] = $harga;
     $_SESSION['hargaWarna'] = $hargaWarna;
     $_SESSION['hargaTeknik'] = $hargaTeknik;
     $_SESSION['hargaDurasi'] = $hargaDurasi;
-    $_SESSION['hargaLuas'] = $hargaLuas;
+    $_SESSION['hargaKain'] = $hargaKain;
     $_SESSION['hasilbatik'] = "0";
 
     // Cari processing time

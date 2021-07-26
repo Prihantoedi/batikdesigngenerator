@@ -46,7 +46,7 @@
                 </tr>
                 <tr id="inputlebar" style="display:none;">
                     <td><label class="label-ukuran-kanvas" for="heightCanv" style="padding:15px">- lebar</label></td><td>:</td>
-                    <td><input type="number" min="0" max="1000" style="width:75px; text-align:right;" name="heightCanv" id="heightCanv" value="100" autocomplete="off" required> cm</td>
+                    <td><input type="number" min="0" max="1000" style="width:75px; text-align:right;" name="heightCanv" id="heightCanv" value="115" autocomplete="off" required> cm</td>
                     
                 </tr>
                 <tr>

@@ -79,6 +79,8 @@
                         <a class="collapse-item" href="hargamesin.php">Harga Mesin</a>
                         <a class="collapse-item" href="hargawarna.php">Harga Warna</a>
                         <a class="collapse-item" href="hargateknik.php">Harga Teknik</a>
+                        <a class="collapse-item" href="hargakain.php">Harga Kain (per m <sup>2</sup>)</a>
+                        
                     </div>
                 </div>
             </li>

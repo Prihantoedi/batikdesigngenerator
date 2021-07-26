@@ -116,7 +116,7 @@
                     <br>
                     Harga Durasi = <?php echo "Rp. " . number_format($_SESSION['hargaDurasi'],2,",",".");?>
                     <br>
-                    Harga Luas = <?php echo "Rp. " . number_format($_SESSION['hargaLuas'],2,",",".");?>
+                    Harga Kain = <?php echo "Rp. " . number_format($_SESSION['hargaKain'],2,",",".");?>
                     <br>
                     Durasi = <?php echo $_SESSION['durasi'];?> 
                     <br>

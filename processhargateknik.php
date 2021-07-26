@@ -1,7 +1,7 @@
 <?php
 
     $conn = mysqli_connect("localhost", "root", "", "database_batik_galih");
-
+    die("heeey");
     if(isset($_POST['hargaBaru'])){
 
         $hargaBaru = $_POST['hargaBaru'];
