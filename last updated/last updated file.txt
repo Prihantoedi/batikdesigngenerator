@@ -1,0 +1,8 @@
+modified:   .saving.php
+modified:   css/hasilbatik.css
+modified:   css/index.css
+modified:   css/simpanbatik.css
+modified:   hasilbatik.php
+modified:   index.php
+modified:   processlogin.php
+modified:   simpanbatik.php
