@@ -4,7 +4,7 @@
     echo 'Saving... <br>';
     session_start();
 
-
+    
     // Where the file should be saved to
     date_default_timezone_set('Asia/Jakarta');
     $filename ="hbatik_".date('mdY_His').".svg";
@@ -280,33 +280,49 @@
 
         // $last_id_process = $process_status == "dalam proses" ? $current_id : $dataSebelumnya['hasilbatik_id'];
         
+        // hitung jumlah warna yg digunakkan saat ini:
+
+
         $color_used = [$warna1, $warna2, $warna3, $warnabg];
+        $temp_used_color = [];
+        foreach($color_used as $cu){
+            if(!in_array($cu, $temp_used_color) && $cu != ""){array_push($temp_used_color, $cu);}
+        }
+
+        $current_used_color = count($temp_used_color); // jumlah warna yang digunakan user yang sedang mendesain, dengan mengabaikan warna yang sama;
+
         $color_used_count = [$warna1 != "" ? $jumlah : 0, $warna2 != "" ? $jumlah : 0, $warna3 != "" ? $jumlah : 0, $warnabg != "" ? $jumlah : 0];
         
         // Proses akumulasi jumlah warna dari user yang masih menunggu,
         // Ditambah dengan jumlah warna yang digunakan user saat ini.
         foreach($user_in_waiting as $user){
             $user_data = json_decode($user);
-            if(in_array($user_data->warna1, $color_used) && $user_data->warna1 != ""){
-                $find_color_key = array_search($user_data->warna1, $color_used);
-                $color_used_count[$find_color_key] = $color_used_count[$find_color_key] + $user_data->jumlah_warna1;               
+
+            if($user_data->num_of_color == $current_used_color){
+                if(in_array($user_data->warna1, $color_used) && $user_data->warna1 != ""){
+                    $find_color_key = array_search($user_data->warna1, $color_used);
+                    $color_used_count[$find_color_key] = $color_used_count[$find_color_key] + $user_data->jumlah_warna1;               
+                }
+                
+                if(in_array($user_data->warna2, $color_used) && $user_data->warna2 != ""){
+                    $find_color_key = array_search($user_data->warna2, $color_used);
+                    $color_used_count[$find_color_key] = $color_used_count[$find_color_key] + $user_data->jumlah_warna2;              
+                }
+    
+                if(in_array($user_data->warna3, $color_used) && $user_data->warna3 != ""){
+                    $find_color_key = array_search($user_data->warna3, $color_used);
+                    $color_used_count[$find_color_key] = $color_used_count[$find_color_key] + $user_data->jumlah_warna3;
+                }
+    
+                if(in_array($user_data->warna_bg, $color_used) && $user_data->warna_bg != ""){
+                    $find_color_key = array_search($user_data->warna_bg, $color_used);
+                    $color_used_count[$find_color_key] = $color_used_count[$find_color_key] + $user_data->jumlah_warnaBg;
+                }
             }
             
-            if(in_array($user_data->warna2, $color_used) && $user_data->warna2 != ""){
-                $find_color_key = array_search($user_data->warna2, $color_used);
-                $color_used_count[$find_color_key] = $color_used_count[$find_color_key] + $user_data->jumlah_warna2;              
-            }
-
-            if(in_array($user_data->warna3, $color_used) && $user_data->warna3 != ""){
-                $find_color_key = array_search($user_data->warna3, $color_used);
-                $color_used_count[$find_color_key] = $color_used_count[$find_color_key] + $user_data->jumlah_warna3;
-            }
-
-            if(in_array($user_data->warna_bg, $color_used) && $user_data->warna_bg != ""){
-                $find_color_key = array_search($user_data->warna_bg, $color_used);
-                $color_used_count[$find_color_key] = $color_used_count[$find_color_key] + $user_data->jumlah_warnaBg;
-            }
         }
+
+    
 
         
 
@@ -315,34 +331,38 @@
         foreach($user_in_waiting as $user_update){
             $user_data = json_decode($user_update);
             $count_color_used = 0;
-
-            if(in_array($user_data->warna1, $color_used) && $user_data->warna1 != ""){
-                $find_color_key = array_search($user_data->warna1, $color_used);
-                $user_data->jumlah_warna1 = $color_used_count[$find_color_key];
-                
-                if($user_data->jumlah_warna1 > 5){$count_color_used++;}
-            } 
-
-            if(in_array($user_data->warna2, $color_used) && $user_data->warna2 != ""){
-                $find_color_key = array_search($user_data->warna2, $color_used);
-                $user_data->jumlah_warna2 = $color_used_count[$find_color_key];
-                if($user_data->jumlah_warna2 > 5){$count_color_used++;} 
-            } 
-
-            if(in_array($user_data->warna3, $color_used) && $user_data->warna3 != ""){
-                $find_color_key = array_search($user_data->warna3, $color_used);
-                $user_data->jumlah_warna3 = $color_used_count[$find_color_key];
-                if($user_data->jumlah_warna3 > 5){$count_color_used++;}
-            } 
-
-            if(in_array($user_data->warna_bg, $color_used) && $user_data->warna_bg != ""){
-                $find_color_key = array_search($user_data->warna_bg, $color_used);
-                $user_data->jumlah_warnaBg = $color_used_count[$find_color_key];
-
-                if($user_data->jumlah_warnaBg > 5){$count_color_used++;}
+            // pengecekkan terlebih dahulu apakah jumlah warna yang digunakan oleh user waiting dan current user sama
+            if($user_data->num_of_color == $current_used_color){ 
+                // update jumlah warna yang digunakan
+                if(in_array($user_data->warna1, $color_used) && $user_data->warna1 != ""){
+                    $find_color_key = array_search($user_data->warna1, $color_used);
+                    $user_data->jumlah_warna1 = $color_used_count[$find_color_key];
+                    
+                    if($user_data->jumlah_warna1 > 5){$count_color_used++;}
+                } 
+    
+                if(in_array($user_data->warna2, $color_used) && $user_data->warna2 != ""){
+                    $find_color_key = array_search($user_data->warna2, $color_used);
+                    $user_data->jumlah_warna2 = $color_used_count[$find_color_key];
+                    if($user_data->jumlah_warna2 > 5){$count_color_used++;} 
+                } 
+    
+                if(in_array($user_data->warna3, $color_used) && $user_data->warna3 != ""){
+                    $find_color_key = array_search($user_data->warna3, $color_used);
+                    $user_data->jumlah_warna3 = $color_used_count[$find_color_key];
+                    if($user_data->jumlah_warna3 > 5){$count_color_used++;}
+                } 
+    
+                if(in_array($user_data->warna_bg, $color_used) && $user_data->warna_bg != ""){
+                    $find_color_key = array_search($user_data->warna_bg, $color_used);
+                    $user_data->jumlah_warnaBg = $color_used_count[$find_color_key];
+    
+                    if($user_data->jumlah_warnaBg > 5){$count_color_used++;}
+                }
             }
             
             if($count_color_used == $user_data->num_of_color){ // bila jumlah pesanan telah mencapai syarat batch penggunaan warna
+                
                 $user_data->status = "dalam proses";
                 
                 $user_data->last_id_process = $last_id_process; // user memegang id_order dengan status "dalam proses" sebelum dia
@@ -445,7 +465,32 @@
             if($teknik == "Celup"){
                 $durasiHari = $durasiHari + $dihitung; // == Perhitungan durasi sampai disini ==
             } 
+
+            // mengupdate last_id_process pada orderan yang masih berstatus daftar tunggu
+
+            $query_who_still_waiting = query("SELECT hasilbatik_id FROM tbl_hasilbatik WHERE status='daftar tunggu' ORDER BY hasilbatik_id");
+            foreach($query_who_still_waiting as $who){
+                $id_order_waiting = $who['hasilbatik_id'];
+                
+                // query update 
+                $query_update_last = "UPDATE tbl_hasilbatik SET last_id_in_process = $current_id WHERE hasilbatik_id = $id_order_waiting";
+                mysqli_query($conn, $query_update_last);
+            }  
+
+
+        } else{
+            // hanya mengupdate last_id_process pada orderan yang masih berstatus daftar tunggu
+            $query_who_still_waiting = query("SELECT hasilbatik_id FROM tbl_hasilbatik WHERE status='daftar tunggu' ORDER BY hasilbatik_id");
+            foreach($query_who_still_waiting as $who){
+                $id_order_waiting = $who['hasilbatik_id'];
+                
+                // query update 
+                $query_update_last = "UPDATE tbl_hasilbatik SET last_id_in_process = $last_id_process WHERE hasilbatik_id = $id_order_waiting";
+                mysqli_query($conn, $query_update_last);
+            }  
         }
+
+        
     
         
     } else{ 
@@ -495,7 +540,7 @@
     }
     
 
-    $_SESSION['durasi'] = $process_status == "dalam proses" ? $durasi. " hari" : "menunggu order selanjutnya";
+    $_SESSION['durasi'] = $process_status == "dalam proses" ? $durasiHari. " hari" : "menunggu order selanjutnya";
     // $_SESSION['durasi'] = $durasiHari . " hari"; 
 
     // PENTING! : Yang di update pada pembeli yang sudah berganti status menjadi dalam proses adalah status, durasi, dan last_id_process

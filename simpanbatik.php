@@ -43,27 +43,27 @@
         // proses menampung semua user yang masih status tunggu:
         $user_wait_obj = new stdClass();
         $user_wait_obj->id_order= $waiting['hasilbatik_id'];
-        $count_color_used = 0;
+        $count_color_used = [];
 
         $user_wait_obj->warna1 = $waiting['warna1'];
         $user_wait_obj->warna1_hex = $color1_hex;
         $user_wait_obj->jumlah_warna1 = $waiting['jumlah_warna1'];
-        if($user_wait_obj->warna1 != ""){$count_color_used++;}
+        if($user_wait_obj->warna1 != "" && !in_array($user_wait_obj->warna1, $count_color_used)){array_push($count_color_used, $user_wait_obj->warna1);}
 
         $user_wait_obj->warna2 = $waiting['warna2'];
         $user_wait_obj->warna2_hex = $color2_hex;
         $user_wait_obj->jumlah_warna2 = $waiting['jumlah_warna2'];
-        if($user_wait_obj->warna2 != ""){$count_color_used++;}
+        if($user_wait_obj->warna2 != "" && !in_array($user_wait_obj->warna2, $count_color_used)){array_push($count_color_used, $user_wait_obj->warna2);}
 
         $user_wait_obj->warna3 = $waiting['warna3'];
         $user_wait_obj->warna3_hex = $color3_hex;
         $user_wait_obj->jumlah_warna3 = $waiting['jumlah_warna3'];
-        if($user_wait_obj->warna3 != ""){$count_color_used++;}
+        if($user_wait_obj->warna3 != "" && !in_array($user_wait_obj->warna3, $count_color_used)){array_push($count_color_used, $user_wait_obj->warna3);}
 
         $user_wait_obj->warna_bg = $waiting['warnaBg'];
         $user_wait_obj->warnabg_hex = $colorbg_hex;
         $user_wait_obj->jumlah_warnaBg = $waiting['jumlah_warnabg'];
-        if($user_wait_obj->warna_bg != ""){$count_color_used++;}
+        if($user_wait_obj->warna_bg != "" && !in_array($user_wait_obj->warna_bg, $count_color_used)){array_push($count_color_used, $user_wait_obj->warna_bg);}
 
         $user_wait_obj->manufact_duration = $waiting['manufacturing_duration'];
         $user_wait_obj->manufact_date = $waiting['manufacturing_date'];
@@ -72,7 +72,7 @@
         $user_wait_obj->last_id_process = $waiting['last_id_in_process']; // id order terakrhi dengan status dalam proses
         $user_wait_obj->coloring_method = $waiting['teknik_pewarnaan'];
         // Untuk mentrace berapa macam warna yang digunakan oleh pembeli:
-        $user_wait_obj->num_of_color = $count_color_used;
+        $user_wait_obj->num_of_color = count($count_color_used);
 
 
     
@@ -194,6 +194,7 @@
         <input type="hidden" name="add-cost"        id="add-cost" value=0>
         <input type="hidden" name="add-cost-status"        id="add-cost-status" value=0>
         <input type="hidden" name="process-status"          id="process-status" value="dalam proses">
+        <input type="hidden" name="waiting-usr"          id="waiting-usr">
     </form>
 
     
@@ -336,13 +337,16 @@
                 
                 var color_count_db = <?php echo json_encode($colorCount); ?>; // warna dari database
                 var color_design = <?php echo json_encode($colorDesign); ?>; // warna dari user yg sedang mendesain 
-                console.log(color_design.length);
 
+                // console.log(color_design.length);
+                
                 var color_count_db_len = <?php echo json_encode($colorCountLength); ?>;
                 color_count_db_len = parseInt(color_count_db_len);
-                            
+
+                // var who_wait = [];            
                 // Pengecekkan Batch
                 var num_ordered = document.getElementById("jumlah").value;
+
                 var from_color_design = num_ordered === "" ? 0 : parseInt(num_ordered); // jumlah orderan yang diinputkan current_user
                 if(num_ordered < 6){ // Apabila jumlah yang dipesan kurang dari 6 , maka dicek akumulasi warna
                     
@@ -356,36 +360,45 @@
                             accumulation_color[color_design[c]] = from_color_design;
                         }
 
-                        // mengiterasi seluruh user waiting untuk dilihat penggunaan warnanya, kemudian dicocokkan jumlahnya dengan user yang sedang mendesain
+                        
+                        // meng-iterasi seluruh user waiting untuk dilihat penggunaan warnanya, kemudian dicocokkan jumlahnya dengan user yang sedang mendesain
                         for(const element in user_waiting){
                             var json_colnum = JSON.parse(user_waiting[element]);
-                            var get_color_num = json_colnum['num_of_color'];
-                            var hex_color_user_waiting = [json_colnum['warna1_hex'], json_colnum['warna2_hex'], json_colnum['warna3_hex'], json_colnum['warnabg_hex'] ]
-                            // console.log(hex_color_user_waiting);
+                            console.log(json_colnum);
 
-                            var dictionary = {"warna1_hex" : "jumlah_warna1", "warna2_hex" : "jumlah_warna2", "warna3_hex" : "jumlah_warna3", "warnabg_hex": "jumlah_warnaBg"};
-                            // console.log(Object.keys(dictionary).find(key => dictionary[key] === "jumlah_warna1"));
                             
+                            var hex_color_user_waiting = [json_colnum['warna1_hex'], json_colnum['warna2_hex'], json_colnum['warna3_hex'], json_colnum['warnabg_hex'] ]
+                            
+                            // console.log(hex_color_user_waiting);
+                            let get_color_num = json_colnum['num_of_color'];
+                            
+                            var dictionary = {"warna1_hex" : "jumlah_warna1", "warna2_hex" : "jumlah_warna2", "warna3_hex" : "jumlah_warna3", "warnabg_hex": "jumlah_warnaBg"};
+      
+ 
                             if(get_color_num == color_design.length){ // jumlah warna yang digunakan user waiting sama current user sama?
-
+                                var count_user = 0;
                                 for(const hex_ele in hex_color_user_waiting){
-                                    if(color_design.includes(hex_color_user_waiting[hex_ele]) && hex_color_user_waiting[hex_ele] != null){
+                                    if(color_design.includes(hex_color_user_waiting[hex_ele]) && hex_color_user_waiting[hex_ele] != null){ 
                                         var get_key_color = Object.keys(json_colnum).find(key=>json_colnum[key] === hex_color_user_waiting[hex_ele]); // mengambil key dari jsoncolnunm : warna heksadesimal
                                         var what_color =  dictionary[get_key_color]; // ambil nilai dari dictionary berdasarkan key
                                         var get_num_color = json_colnum[what_color];
                                         get_num_color = parseInt(get_num_color); 
                                         accumulation_color[hex_color_user_waiting[hex_ele]] = accumulation_color[hex_color_user_waiting[hex_ele]] + get_num_color;  // menghitung akumulasi warna yang sama digunakan
+                                        count_user++;
                                     }
                                 }
+                                // if(count_user == get_color_num){who_wait.push(json_colnum['id_order']);}
                             }
                         }
                         // console.log(accumulation_color);
+
                         for(const property in accumulation_color){
                             if(accumulation_color[property] < 6){continue_process = false; break;}
                         }
 
                         // cek apakah ada total penggunaan warna kurang dari 6 ? 
                         if(!continue_process){
+
                             var add_cost = document.getElementById("add-cost-desc");
                             if(from_color_design == 1) {add_cost.innerHTML = "75.000";}
                             else if(from_color_design == 2){add_cost.innerHTML = "37.500";}
@@ -396,7 +409,7 @@
 
                             var specialCaseModal = document.getElementById("btn-trigger");
                             specialCaseModal.click(); // asking confirmation
-                            $continue_process = false;
+                            // continue_process = false;
                         } else{
                             var saveBtn = document.getElementById("saveButton");
                             saveBtn.click();

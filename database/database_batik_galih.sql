@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 18, 2021 at 02:45 AM
+-- Generation Time: Oct 18, 2021 at 12:17 PM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -366,7 +366,22 @@ INSERT INTO `jtbl_hasilbatik_motif` (`hasilbatik_id`, `motif_id`, `urutan`, `uku
 (132, 20, 1, 12),
 (132, 6, 2, 12),
 (133, 14, 1, 12),
-(133, 28, 2, 12);
+(133, 28, 2, 12),
+(134, 5, 1, 12),
+(135, 8, 1, 12),
+(136, 8, 1, 12),
+(136, 7, 2, 12),
+(137, 2, 1, 12),
+(138, 16, 1, 12),
+(138, 26, 2, 12),
+(139, 20, 1, 12),
+(140, 8, 1, 12),
+(140, 30, 2, 12),
+(141, 5, 1, 12),
+(141, 28, 2, 12),
+(141, 39, 3, 12),
+(142, 4, 1, 12),
+(142, 11, 2, 12);
 
 -- --------------------------------------------------------
 
@@ -2021,7 +2036,16 @@ INSERT INTO `tbl_hasilbatik` (`hasilbatik_id`, `hasilbatik_file`, `hasilbatik_fi
 (130, 'hbatik_10172021_230355.svg', 'hbatik_Hp_10172021_230355.svg', '2021-10-17 23:03:55', 'pri', 'next testing', 1, 1, 200, 115, 1, 1, 0, 0, 0, 4, 'celup', 'Yellow IGK', 4, '', 0, '', 0, 'Green IB', 10, 30, 10, '2021-10-17 23:03:55', 5251130, 'dalam proses', 'belum', 7, 3, 129),
 (131, 'hbatik_10182021_063841.svg', 'hbatik_Hp_10182021_063841.svg', '2021-10-18 06:38:41', 'pri', 'asdas', 1, 1, 200, 115, 1, 1, 0, 0, 0, 2, 'celup', 'Green IB', 2, '', 0, '', 0, 'Green IB', 2, 30, 3, '2021-10-18 06:38:41', 5095002, 'dalam proses', 'belum', 7, 3, 130),
 (132, 'hbatik_10182021_064957.svg', 'hbatik_Hp_10182021_064957.svg', '2021-10-18 06:49:57', 'pri', 'testing desain', 1, 2, 200, 115, 1, 1, 0, 0, 0, 3, 'celup', 'Yellow IGK', 3, 'Yellow IGK', 3, '', 0, 'Brown IRRD', 3, 35, 3, '2021-10-18 07:24:16', 5631513, 'dalam proses', 'belum', 7, 3, 131),
-(133, 'hbatik_10182021_072416.svg', 'hbatik_Hp_10182021_072416.svg', '2021-10-18 07:24:16', 'pri', 'testing order', 1, 2, 200, 115, 1, 1, 0, 0, 0, 3, 'celup', 'Yellow IGK', 3, 'Yellow IGK', 3, '', 0, 'Brown IRRD', 3, 39, 2, '2021-10-18 07:24:16', 2971065, 'dalam proses', 'belum', 7, 3, 132);
+(133, 'hbatik_10182021_072416.svg', 'hbatik_Hp_10182021_072416.svg', '2021-10-18 07:24:16', 'pri', 'testing order', 1, 2, 200, 115, 1, 1, 0, 0, 0, 3, 'celup', 'Yellow IGK', 3, 'Yellow IGK', 3, '', 0, 'Brown IRRD', 3, 39, 2, '2021-10-18 07:24:16', 2971065, 'dalam proses', 'belum', 7, 3, 132),
+(134, 'hbatik_10182021_075240.svg', 'hbatik_Hp_10182021_075240.svg', '2021-10-18 07:52:40', 'pri', 'testing order', 1, 1, 200, 115, 1, 1, 0, 0, 0, 2, 'celup', 'Yellow IRK', 2, '', 0, '', 0, 'Blue 04B', 2, 44, 3, '2021-10-18 11:43:38', 5660529, 'dalam proses', 'belum', 7, 3, 133),
+(135, 'hbatik_10182021_075520.svg', 'hbatik_Hp_10182021_075520.svg', '2021-10-18 07:55:20', 'pri', 'testing order', 1, 1, 200, 115, 1, 1, 0, 0, 0, 1, 'celup', 'Yellow IRK', 1, '', 0, '', 0, 'Blue 04B', 1, 47, 1, '2021-10-18 11:43:38', 1604174, 'dalam proses', 'belum', 7, 3, 134),
+(136, 'hbatik_10182021_114338.svg', 'hbatik_Hp_10182021_114338.svg', '2021-10-18 11:43:38', 'pri', 'testing_order', 1, 2, 200, 115, 1, 1, 0, 0, 0, 4, 'celup', 'Rose IR', 4, 'Blue 04B', 4, '', 0, 'Yellow IRK', 4, 62, 2, '2021-10-18 17:08:29', 5034310, 'dalam proses', 'belum', 7, 3, 139),
+(137, 'hbatik_10182021_170142.svg', 'hbatik_Hp_10182021_170142.svg', '2021-10-18 17:01:42', 'pri', 'testing order', 1, 1, 200, 115, 1, 1, 0, 0, 0, 3, 'celup', 'Rose IR', 3, '', 0, '', 0, 'Yellow IRK', 3, 53, 4, '2021-10-18 17:05:27', 8862582, 'dalam proses', 'belum', 7, 3, 135),
+(138, 'hbatik_10182021_170331.svg', 'hbatik_Hp_10182021_170331.svg', '2021-10-18 17:03:31', 'pri', 'testing_order', 1, 2, 200, 115, 1, 1, 0, 0, 0, 4, 'celup', 'Yellow IGK', 4, 'Yellow IRK', 4, '', 0, 'Green IB', 4, 2, 2, '2021-10-18 17:03:31', 4451953, 'daftar tunggu', 'belum', 7, 3, 142),
+(139, 'hbatik_10182021_170527.svg', 'hbatik_Hp_10182021_170527.svg', '2021-10-18 17:05:27', 'pri', 'testing order', 1, 1, 200, 115, 1, 1, 0, 0, 0, 3, 'celup', 'Yellow IRK', 3, '', 0, '', 0, 'Rose IR', 3, 57, 2, '2021-10-18 17:05:27', 3541558, 'dalam proses', 'belum', 7, 3, 137),
+(140, 'hbatik_10182021_170829.svg', 'hbatik_Hp_10182021_170829.svg', '2021-10-18 17:08:29', 'pri', 'testing order', 1, 2, 200, 115, 1, 1, 0, 0, 0, 2, 'celup', 'Blue 04B', 2, 'Yellow IRK', 2, '', 0, 'Rose IR', 2, 62, 2, '2021-10-18 17:08:29', 3892440, 'dalam proses', 'belum', 7, 3, 136),
+(141, 'hbatik_10182021_171358.svg', 'hbatik_Hp_10182021_171358.svg', '2021-10-18 17:13:58', 'pri', 'asdas', 1, 3, 200, 115, 1, 1, 0, 0, 0, 4, 'celup', 'Brown IRRD', 4, 'Rose IR', 4, 'Brown IRRD', 4, 'Green IB', 4, 4, 4, '2021-10-18 17:13:58', 7910714, 'daftar tunggu', 'lunas', 7, 3, 142),
+(142, 'hbatik_10182021_171553.svg', 'hbatik_Hp_10182021_171553.svg', '2021-10-18 17:15:53', 'pri', 'testing order', 1, 2, 200, 115, 1, 1, 0, 0, 0, 2, 'celup', 'Grey IRL', 2, 'Orange HR', 2, '', 0, 'Violet 14R', 2, 67, 2, '2021-10-18 17:15:53', 4209056, 'dalam proses', 'belum', 7, 3, 140);
 
 -- --------------------------------------------------------
 
@@ -2435,7 +2459,7 @@ ALTER TABLE `tbl_algoritma`
 -- AUTO_INCREMENT for table `tbl_hasilbatik`
 --
 ALTER TABLE `tbl_hasilbatik`
-  MODIFY `hasilbatik_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=134;
+  MODIFY `hasilbatik_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=143;
 
 --
 -- AUTO_INCREMENT for table `tbl_karakter`
