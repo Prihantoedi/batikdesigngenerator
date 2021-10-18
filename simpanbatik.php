@@ -21,12 +21,13 @@
     // setiap id yang masih dalam daftar tunggu akan memegang id terakhir yang on process;
 
     foreach($waitingList as $waiting){
+        
         $color1_hex = colorToHex($waiting["warna1"]);
         $color2_hex = colorToHex($waiting["warna2"]);
         $color3_hex = colorToHex($waiting["warna3"]);
         $colorbg_hex = colorToHex($waiting["warnaBg"]);
                 
-
+        
         if(array_key_exists($color1_hex, $colorCount)){ $colorCount[$color1_hex] = $colorCount[$color1_hex] + $waiting["jumlah_warna1"];}
         else $colorCount[$color1_hex] = $waiting["jumlah_warna1"];
 
@@ -43,19 +44,24 @@
         $user_wait_obj = new stdClass();
         $user_wait_obj->id_order= $waiting['hasilbatik_id'];
         $count_color_used = 0;
+
         $user_wait_obj->warna1 = $waiting['warna1'];
+        $user_wait_obj->warna1_hex = $color1_hex;
         $user_wait_obj->jumlah_warna1 = $waiting['jumlah_warna1'];
         if($user_wait_obj->warna1 != ""){$count_color_used++;}
 
         $user_wait_obj->warna2 = $waiting['warna2'];
+        $user_wait_obj->warna2_hex = $color2_hex;
         $user_wait_obj->jumlah_warna2 = $waiting['jumlah_warna2'];
         if($user_wait_obj->warna2 != ""){$count_color_used++;}
 
         $user_wait_obj->warna3 = $waiting['warna3'];
+        $user_wait_obj->warna3_hex = $color3_hex;
         $user_wait_obj->jumlah_warna3 = $waiting['jumlah_warna3'];
         if($user_wait_obj->warna3 != ""){$count_color_used++;}
 
         $user_wait_obj->warna_bg = $waiting['warnaBg'];
+        $user_wait_obj->warnabg_hex = $colorbg_hex;
         $user_wait_obj->jumlah_warnaBg = $waiting['jumlah_warnabg'];
         if($user_wait_obj->warna_bg != ""){$count_color_used++;}
 
@@ -316,66 +322,119 @@
         var urlSVGHp = document.getElementsByTagName('a')[1].getAttribute('href');
         document.getElementById('var_svgBatikHp').value = urlSVGHp;
         
-
+        
       
 
         // Save Event: kasus spesifik warna belum memenuhi batch 
-   
+        
     
         document.addEventListener("click", function(event){
            var btnClicked = event.target;
             
             if(btnClicked["id"] == "dummy-save"){
+                var user_waiting = <?php echo json_encode($user_in_waiting); ?>;
                 
                 var color_count_db = <?php echo json_encode($colorCount); ?>; // warna dari database
                 var color_design = <?php echo json_encode($colorDesign); ?>; // warna dari user yg sedang mendesain 
+                console.log(color_design.length);
 
-                
-               var color_count_db_len = <?php echo json_encode($colorCountLength); ?>;
-               color_count_db_len = parseInt(color_count_db_len);
+                var color_count_db_len = <?php echo json_encode($colorCountLength); ?>;
+                color_count_db_len = parseInt(color_count_db_len);
                             
                 // Pengecekkan Batch
                 var num_ordered = document.getElementById("jumlah").value;
-                var from_color_design = num_ordered === "" ? 0 : parseInt(num_ordered);
+                var from_color_design = num_ordered === "" ? 0 : parseInt(num_ordered); // jumlah orderan yang diinputkan current_user
                 if(num_ordered < 6){ // Apabila jumlah yang dipesan kurang dari 6 , maka dicek akumulasi warna
                     
-    
+                    
                     if(color_count_db_len > 0){
-                        $continue_process = true;
+                        var continue_process = true;
+                        var count_continue_process = 0;
                         
-                        for(var[key, value] of Object.entries(color_count_db)){
-                            color_count_db[key] = parseInt(value);
+                        var accumulation_color = {}; // menampung warna jumlah warna dari user yang sedang mendesain
+                        for(const c in  color_design){
+                            accumulation_color[color_design[c]] = from_color_design;
+                        }
+
+                        // mengiterasi seluruh user waiting untuk dilihat penggunaan warnanya, kemudian dicocokkan jumlahnya dengan user yang sedang mendesain
+                        for(const element in user_waiting){
+                            var json_colnum = JSON.parse(user_waiting[element]);
+                            var get_color_num = json_colnum['num_of_color'];
+                            var hex_color_user_waiting = [json_colnum['warna1_hex'], json_colnum['warna2_hex'], json_colnum['warna3_hex'], json_colnum['warnabg_hex'] ]
+                            // console.log(hex_color_user_waiting);
+
+                            var dictionary = {"warna1_hex" : "jumlah_warna1", "warna2_hex" : "jumlah_warna2", "warna3_hex" : "jumlah_warna3", "warnabg_hex": "jumlah_warnaBg"};
+                            // console.log(Object.keys(dictionary).find(key => dictionary[key] === "jumlah_warna1"));
                             
-                            // apabila ada warna yang sama antara user waiting dan user sekarang sedang mendesain:
-                            if(color_design.includes(key)){ 
-   
-                                
-                                color_count_db[key] = color_count_db[key] + from_color_design;
+                            if(get_color_num == color_design.length){ // jumlah warna yang digunakan user waiting sama current user sama?
 
-
-                                if(color_count_db[key] < 6){
-                                    var add_cost = document.getElementById("add-cost-desc");
-        
-                                    if(from_color_design == 1) {add_cost.innerHTML = "75.000";}
-                                    else if(from_color_design == 2){add_cost.innerHTML = "37.500";}
-                                    else if(from_color_design == 3){add_cost.innerHTML = "25.000";}
-                                    else if(from_color_design == 4){add_cost.innerHTML = "18.750";}
-                                    else if(from_color_design == 5){add_cost.innerHTML = "15.000";}
-                                    else {add_cost.innerHTML = 0;}
-
-                                    var specialCaseModal = document.getElementById("btn-trigger");
-                                    specialCaseModal.click(); // asking confirmation
-                                    $continue_process = false;
+                                for(const hex_ele in hex_color_user_waiting){
+                                    if(color_design.includes(hex_color_user_waiting[hex_ele]) && hex_color_user_waiting[hex_ele] != null){
+                                        var get_key_color = Object.keys(json_colnum).find(key=>json_colnum[key] === hex_color_user_waiting[hex_ele]); // mengambil key dari jsoncolnunm : warna heksadesimal
+                                        var what_color =  dictionary[get_key_color]; // ambil nilai dari dictionary berdasarkan key
+                                        var get_num_color = json_colnum[what_color];
+                                        get_num_color = parseInt(get_num_color); 
+                                        accumulation_color[hex_color_user_waiting[hex_ele]] = accumulation_color[hex_color_user_waiting[hex_ele]] + get_num_color;  // menghitung akumulasi warna yang sama digunakan
+                                    }
                                 }
                             }
-                            
-                        } 
+                        }
+                        // console.log(accumulation_color);
+                        for(const property in accumulation_color){
+                            if(accumulation_color[property] < 6){continue_process = false; break;}
+                        }
 
-                        // process langsung berlanjut apabila jumlah pesanan < 6 namun sudah memenuhi batch
-                        if($continue_process){ 
+                        // cek apakah ada total penggunaan warna kurang dari 6 ? 
+                        if(!continue_process){
+                            var add_cost = document.getElementById("add-cost-desc");
+                            if(from_color_design == 1) {add_cost.innerHTML = "75.000";}
+                            else if(from_color_design == 2){add_cost.innerHTML = "37.500";}
+                            else if(from_color_design == 3){add_cost.innerHTML = "25.000";}
+                            else if(from_color_design == 4){add_cost.innerHTML = "18.750";}
+                            else if(from_color_design == 5){add_cost.innerHTML = "15.000";}
+                            else {add_cost.innerHTML = 0;}
+
+                            var specialCaseModal = document.getElementById("btn-trigger");
+                            specialCaseModal.click(); // asking confirmation
+                            $continue_process = false;
+                        } else{
                             var saveBtn = document.getElementById("saveButton");
                             saveBtn.click();
                         }
+    
+                        // for(var[key, value] of Object.entries(color_count_db)){
+                        //     color_count_db[key] = parseInt(value);
+                            
+                            
+                        //     // apabila ada warna yang sama antara user waiting dan user sekarang sedang mendesain:
+                        //     if(color_design.includes(key)){ 
+   
+                        //         color_count_db[key] = color_count_db[key] + from_color_design;
+
+
+                        //         if(color_count_db[key] < 6){
+                        //             var add_cost = document.getElementById("add-cost-desc");
+        
+                        //             if(from_color_design == 1) {add_cost.innerHTML = "75.000";}
+                        //             else if(from_color_design == 2){add_cost.innerHTML = "37.500";}
+                        //             else if(from_color_design == 3){add_cost.innerHTML = "25.000";}
+                        //             else if(from_color_design == 4){add_cost.innerHTML = "18.750";}
+                        //             else if(from_color_design == 5){add_cost.innerHTML = "15.000";}
+                        //             else {add_cost.innerHTML = 0;}
+
+                        //             var specialCaseModal = document.getElementById("btn-trigger");
+                        //             specialCaseModal.click(); // asking confirmation
+                        //             $continue_process = false;
+                        //         }
+                        //     }
+                            
+                        // } 
+
+                        // // process langsung berlanjut apabila jumlah pesanan < 6 namun sudah memenuhi batch
+                        // if($continue_process){ 
+                        //     var saveBtn = document.getElementById("saveButton");
+                        //     saveBtn.click();
+                        // }
 
                     }   else{
                         var add_cost = document.getElementById("add-cost-desc");
