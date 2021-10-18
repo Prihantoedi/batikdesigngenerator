@@ -5,6 +5,15 @@
         echo "<script>window.location = 'login.php'</script>";
     }
 
+    $conn = mysqli_connect("localhost", "root", "", "database_batik_galih");
+    $cust_id = $_SESSION['id_customer'];
+    $query = "SELECT status FROM tbl_hasilbatik WHERE id_customer = '$cust_id' ORDER BY hasilbatik_id DESC LIMIT 1 ";
+    $sql = mysqli_query($conn, $query) or die(mysqli_error($conn));
+    
+    $get_status_data = mysqli_fetch_assoc($sql);
+    $status_data = $get_status_data['status'];
+    
+
 ?>
 
 <!DOCTYPE html>
@@ -84,7 +93,10 @@
             </table>
             <img id="ilustrasimotif" style="height:240px; margin-top:10px;margin-side: auto;" src="img/_Ilustrasi Berderet.png"></img>
             <br>
-            <a href="processlogout.php">Log out</a>
+            <div id="order-status">Status pesanan : <?php echo  $status_data; ?></div>
+            <div id="logoutBtn"><a href="processlogout.php">Log out</a></div> 
+            
+            
         </form>
 
         <p id="halamanlain"><a href="hasilbatik.php?id=<?php echo $_SESSION['id_customer'] ?>">Hasil desain</a> ||| <a href="katalog.php">Katalog Motif</a>
@@ -94,6 +106,14 @@
     <style>
     </style>
     <script>
+
+        // change status background
+        var checkProcessStatus = document.getElementById("order-status");
+        console.log(checkProcessStatus.innerHTML);
+        if(checkProcessStatus.innerHTML == "Status pesanan : daftar tunggu"){
+            checkProcessStatus.style.background =  "#f79423";
+        }
+
         function gantiUkuran(target){
             var kain = target.value;
             document.getElementById('inputpanjang').style   = "display:none;";

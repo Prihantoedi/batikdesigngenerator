@@ -9,7 +9,7 @@
         $password = $_POST['password'];
 
         $sql = mysqli_query($conn, "SELECT * FROM customers WHERE username = '$username' AND password = '$password'") or die(mysqli_error($conn));
-
+        
         if (mysqli_num_rows($sql) != 0) {
 
             $dataCustomer = mysqli_fetch_assoc($sql);
@@ -24,7 +24,9 @@
             $_SESSION['password_customer'] = $dataCustomer['password'];
             $_SESSION['jenis_customer'] = $dataCustomer['jenis'];
             $_SESSION['role_customer'] = $dataCustomer['role'];
-        
+            
+
+    
             echo '<script language="javascript">';
             echo 'alert("Login Berhasil")';
             echo '</script>';

@@ -23,3 +23,13 @@ table{
     margin:15px auto;
     text-align:left;
 }
+
+#dummy-save{
+    background-color: #10972d;
+    color: #fff;
+    display: inline;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+
+}

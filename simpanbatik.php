@@ -3,7 +3,80 @@
     
     // Functions
     require '_functions.php';
+    require 'colortranslate.php';
 
+    // koneksi ke hasilbatik database untuk menghitung warna yang masuk sesuai minimal batch
+    $conn = mysqli_connect("localhost", "root", "", "database_batik_galih");
+    
+    
+    // Mencari user yang memiliki status daftar tunggu, dan menghitung akumulasi warna yang sama digunakan
+
+    $waitingList = query("SELECT * FROM tbl_hasilbatik WHERE status = 'daftar tunggu' ");
+    $colorCount = array();
+    $user_in_waiting = array(); // menampung semua user yang masih di status tunggu
+
+    // untuk status user yang masih di daftar tunggu, data yang dibutuhkan adalah:
+    // hasilbatik_id, warna1, jumlah warna1, warna2, jumlah warna2, warna3, jumlah warna3, warna background, jumlah warna background-
+    // dan id orderan terakhir yang sudah masuk dalam process (last_id_in_process);
+    // setiap id yang masih dalam daftar tunggu akan memegang id terakhir yang on process;
+
+    foreach($waitingList as $waiting){
+        $color1_hex = colorToHex($waiting["warna1"]);
+        $color2_hex = colorToHex($waiting["warna2"]);
+        $color3_hex = colorToHex($waiting["warna3"]);
+        $colorbg_hex = colorToHex($waiting["warnaBg"]);
+                
+
+        if(array_key_exists($color1_hex, $colorCount)){ $colorCount[$color1_hex] = $colorCount[$color1_hex] + $waiting["jumlah_warna1"];}
+        else $colorCount[$color1_hex] = $waiting["jumlah_warna1"];
+
+        if(array_key_exists($color2_hex, $colorCount)){ $colorCount[$color2_hex] = $colorCount[$color2_hex] + $waiting["jumlah_warna2"];}
+        else $colorCount[$color2_hex] = $waiting["jumlah_warna2"];
+        
+        if(array_key_exists($color3_hex, $colorCount)){ $colorCount[$color3_hex] = $colorCount[$color3_hex] + $waiting["jumlah_warna3"];}
+        else $colorCount[$color3_hex] = $waiting["jumlah_warna3"];
+
+        if(array_key_exists($colorbg_hex, $colorCount)){ $colorCount[$colorbg_hex] = $colorCount[$colorbg_hex] + $waiting["jumlah_warnabg"];}
+        else $colorCount[$colorbg_hex] = $waiting["jumlah_warnabg"];
+
+        // proses menampung semua user yang masih status tunggu:
+        $user_wait_obj = new stdClass();
+        $user_wait_obj->id_order= $waiting['hasilbatik_id'];
+        $count_color_used = 0;
+        $user_wait_obj->warna1 = $waiting['warna1'];
+        $user_wait_obj->jumlah_warna1 = $waiting['jumlah_warna1'];
+        if($user_wait_obj->warna1 != ""){$count_color_used++;}
+
+        $user_wait_obj->warna2 = $waiting['warna2'];
+        $user_wait_obj->jumlah_warna2 = $waiting['jumlah_warna2'];
+        if($user_wait_obj->warna2 != ""){$count_color_used++;}
+
+        $user_wait_obj->warna3 = $waiting['warna3'];
+        $user_wait_obj->jumlah_warna3 = $waiting['jumlah_warna3'];
+        if($user_wait_obj->warna3 != ""){$count_color_used++;}
+
+        $user_wait_obj->warna_bg = $waiting['warnaBg'];
+        $user_wait_obj->jumlah_warnaBg = $waiting['jumlah_warnabg'];
+        if($user_wait_obj->warna_bg != ""){$count_color_used++;}
+
+        $user_wait_obj->manufact_duration = $waiting['manufacturing_duration'];
+        $user_wait_obj->manufact_date = $waiting['manufacturing_date'];
+        $user_wait_obj->status = $waiting['status'];
+
+        $user_wait_obj->last_id_process = $waiting['last_id_in_process']; // id order terakrhi dengan status dalam proses
+        $user_wait_obj->coloring_method = $waiting['teknik_pewarnaan'];
+        // Untuk mentrace berapa macam warna yang digunakan oleh pembeli:
+        $user_wait_obj->num_of_color = $count_color_used;
+
+
+    
+        $make_json =  json_encode($user_wait_obj);
+
+        array_push($user_in_waiting, $make_json);
+    }
+
+    $colorCountLength = count($colorCount); // for javascript
+    
     if(isset($_POST['submitsimpan'])){
         
         $_SESSION['svgBatik']  = $_POST['svgBatik'];
@@ -19,27 +92,32 @@
         $_SESSION['keliling'] = ($_POST['keliling']);
         $_SESSION['totalmotif'] = ($_POST['totalmotif']);
         $_SESSION['datawarna'] = ($_POST['datawarna']);
+        $_SESSION['addcost'] = ($_POST['add-cost']);
+        $_SESSION['add-cost-status'] = ($_POST['add-cost-status']);
+        $_SESSION['process-status'] = ($_POST['process-status']);
+        $_SESSION['user-waiting'] = $user_in_waiting;
         header('location:.saving.php');
         exit;
     }
 
-    // die($_SESSION['colorchange']);
     $motifJml = count($_SESSION['motif_id']);
+    $colorDesign = [];
     $warnaBg = $_SESSION['colorBg'];
     $warna1 = $_SESSION['color1'];
+    array_push($colorDesign, $warnaBg, $warna1);
 
     if($motifJml == 1 ){
-        // $warna2 = $_SESSION['color2'];
         $warna2 = null;
         $warna3 = null;
     } elseif($motifJml == 2){
         $warna2 = $_SESSION['color2'];
+        array_push($colorDesign, $warna2);
         $warna3 = null;
     } else{
         $warna2 = $_SESSION['color2'];
         $warna3 = $_SESSION['color3'];
+        array_push($colorDesign, $warna2, $warna3);
     }
-
 
     if($motifJml>0){
         foreach($_SESSION['motif_id'] as $mtf){
@@ -52,6 +130,9 @@
         $algoritmaFile = algorithmSwitch($_SESSION["algoritma"],$motifJml);
     }
 
+    // penambahan harga jika jumlah pesanan tidak memenuhi batch, dan konsumen tidak mau menunggu:
+
+
 ?>
 
 <!DOCTYPE html>
@@ -62,6 +143,8 @@
     <title>Bikin Batik</title>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet"> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="css/simpanbatik.css">
 </head>
 <body >
@@ -88,7 +171,8 @@
                 </td>
             </tr>
         </table>
-        <button type="submit" name="submitsimpan" id="saveButton" onclick="return confirm('Apakah data yg anda inputkan sudah sesuai?')">Simpan Batik</button>
+        <button type="submit" name="submitsimpan" id="saveButton" onclick="return confirm('Apakah data yg anda inputkan sudah sesuai?')" hidden>Simpan Batik</button>
+        <div name="dummySave" id="dummy-save">Simpan Batik</div>
         <input type="hidden" name="svgBatik"        id="var_svgBatik"        value="">
 
         <input type="hidden" name="svgBatikHp"      id="var_svgBatikHp"      value="">
@@ -101,7 +185,39 @@
         <input type="hidden" name="keliling"        id="collect-keliling">
         <input type="hidden" name="totalmotif"      id="total-motif">
         <input type="hidden" name="datawarna"      id="data-warna">
+        <input type="hidden" name="add-cost"        id="add-cost" value=0>
+        <input type="hidden" name="add-cost-status"        id="add-cost-status" value=0>
+        <input type="hidden" name="process-status"          id="process-status" value="dalam proses">
     </form>
+
+    
+    <!-- MODAL UNTUK KONFIRMASI MENUNGGU PESANAN BARU MASUK HINGGA JUMLAH WARNA TERPENUHI -->
+
+    <button type="button" class="btn btn-primary" id="btn-trigger" data-bs-toggle="modal" data-bs-target="#modalInfo" hidden>
+    Launch
+    </button>
+
+    <!-- Modal -->
+    
+    <div class="modal fade" id="modalInfo" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            Pesanan anda masuk dalam daftar tunggu sebelum diproses. Apakah Anda bersedia menambah Rp. <span id="add-cost-desc">xxx</span> agar pesanan langsung diproses?
+    
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="onprocess">Ya</button>
+                <button type="button" class="btn btn-dark" id="waiting">Tidak</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- END: MODAL UNTUK KONFIRMASI MENUNGGU PESANAN BARU MASUK HINGGA JUMLAH WARNA TERPENUHI -->
 
     <?php if (isset($_SESSION['warna1']) && !empty($_SESSION['warna1'])) {?>
         <div id="color-motif1-opt" value="<?php echo $_SESSION['warna1'];?>"> </div>
@@ -185,6 +301,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvg/dist/browser/canvg.min.js"></script>
     
     <script>
+
         var isCanvasExist = document.getElementById("mycanv");
         if(isCanvasExist){
             isCanvasExist.style.fill = "<?php echo $_SESSION['colorBg']; ?>";
@@ -200,22 +317,129 @@
         document.getElementById('var_svgBatikHp').value = urlSVGHp;
         
 
+      
+
+        // Save Event: kasus spesifik warna belum memenuhi batch 
+   
+    
+        document.addEventListener("click", function(event){
+           var btnClicked = event.target;
+            
+            if(btnClicked["id"] == "dummy-save"){
+                
+                var color_count_db = <?php echo json_encode($colorCount); ?>; // warna dari database
+                var color_design = <?php echo json_encode($colorDesign); ?>; // warna dari user yg sedang mendesain 
+
+                
+               var color_count_db_len = <?php echo json_encode($colorCountLength); ?>;
+               color_count_db_len = parseInt(color_count_db_len);
+                            
+                // Pengecekkan Batch
+                var num_ordered = document.getElementById("jumlah").value;
+                var from_color_design = num_ordered === "" ? 0 : parseInt(num_ordered);
+                if(num_ordered < 6){ // Apabila jumlah yang dipesan kurang dari 6 , maka dicek akumulasi warna
+                    
+    
+                    if(color_count_db_len > 0){
+                        $continue_process = true;
+                        
+                        for(var[key, value] of Object.entries(color_count_db)){
+                            color_count_db[key] = parseInt(value);
+                            
+                            // apabila ada warna yang sama antara user waiting dan user sekarang sedang mendesain:
+                            if(color_design.includes(key)){ 
+   
+                                
+                                color_count_db[key] = color_count_db[key] + from_color_design;
+
+
+                                if(color_count_db[key] < 6){
+                                    var add_cost = document.getElementById("add-cost-desc");
+        
+                                    if(from_color_design == 1) {add_cost.innerHTML = "75.000";}
+                                    else if(from_color_design == 2){add_cost.innerHTML = "37.500";}
+                                    else if(from_color_design == 3){add_cost.innerHTML = "25.000";}
+                                    else if(from_color_design == 4){add_cost.innerHTML = "18.750";}
+                                    else if(from_color_design == 5){add_cost.innerHTML = "15.000";}
+                                    else {add_cost.innerHTML = 0;}
+
+                                    var specialCaseModal = document.getElementById("btn-trigger");
+                                    specialCaseModal.click(); // asking confirmation
+                                    $continue_process = false;
+                                }
+                            }
+                            
+                        } 
+
+                        // process langsung berlanjut apabila jumlah pesanan < 6 namun sudah memenuhi batch
+                        if($continue_process){ 
+                            var saveBtn = document.getElementById("saveButton");
+                            saveBtn.click();
+                        }
+
+                    }   else{
+                        var add_cost = document.getElementById("add-cost-desc");
+                        if(from_color_design == 1) {add_cost.innerHTML = "75.000";}
+                        else if(from_color_design == 2){add_cost.innerHTML = "37.500";}
+                        else if(from_color_design == 3){add_cost.innerHTML = "25.000";}
+                        else if(from_color_design == 4){add_cost.innerHTML = "18.750";}
+                        else if(from_color_design == 5){add_cost.innerHTML = "15.000";}
+                        else {add_cost.innerHTML = 0;}
+
+                        var specialCaseModal = document.getElementById("btn-trigger");
+                        specialCaseModal.click(); // asking confirmation => diarahkan ke pertanyaan biaya tambahan
+                    }
+                    
+
+                    
+                } 
+
+                else {  // Bila order lebih dari 5
+                    var saveBtn = document.getElementById("saveButton");
+                    saveBtn.click();
+                }
+                
+
+            }
+
+            // Event jika pembeli setuju membayar biaya tambahan
+
+            if(btnClicked["id"] == "onprocess"){
+                var add_cost_html = document.getElementById("add-cost-desc");
+                var add_cost = add_cost_html.innerHTML;
+                add_cost = add_cost.replace(".", "");
+                
+                var add_cost_session = document.getElementById("add-cost");
+                add_cost_session.setAttribute("value", add_cost);
+
+                var add_cost_session_status = document.getElementById("add-cost-status");
+                add_cost_session_status.setAttribute("value", 1);
+
+                // klik save
+                var saveBtn = document.getElementById("saveButton");
+                saveBtn.click();
+            }
+
+            // Event jika pembeli tidak setuju membayar biaya tambahan
+
+            if(btnClicked["id"] == "waiting"){
+                var process_status = document.getElementById("process-status");
+                process_status.setAttribute("value", "daftar tunggu");
+
+                 // klik save
+                 var saveBtn = document.getElementById("saveButton");
+                saveBtn.click();
+            }
+
+            
+        });
+
+
+        // End : Save Event
+        
         var allMotifClass = ["first-motif", "second-motif", "third-motif"];
         var collectKeliling = [];
         var numOfMotif = [];
-
-
-        // var getWidth = document.getElementsByClassName("first-motif")[0];
-        // // var getPath = getWidth.getElementsByTagName("path")[0].getTotalLength();
-        // var getPath = getWidth.getElementsByTagName("path")[0];
-        // var width = getWidth.getBBox().width;
-        // console.log(width);
-        // // var perimeter = getPath * width;
-        // // console.log(perimeter);
-        // var getRealWidth = getPath.getBoundingClientRect().width / getPath.getBBox().width;
-
-        // var perimeter = getPath.getTotalLength() * getRealWidth;
-        // console.log(perimeter * 0.02645833);
 
         for (i = 0 ; i < motifJml; i++){
             
@@ -238,7 +462,6 @@
            
         }
         
-        // console.log(collectKeliling);
 
         // input ke form
         var inKeliling = document.getElementById("collect-keliling");
@@ -257,7 +480,7 @@
         }
         
         var dataWarnaId = document.getElementById("data-warna");
-        console.log(dataWarna);
+
         dataWarnaId.setAttribute("value", dataWarna);
         
         
