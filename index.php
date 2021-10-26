@@ -1,19 +1,18 @@
 <?php 
     session_start();
+    require('_functions.php');
+    require('database/db_management/querycenter.php');
 
     if(!isset($_SESSION['username_customer'])){
-        echo "<script>window.location = 'login.php'</script>";
+        // echo "<script>window.location = 'login.php'</script>";
+        header("Location: ". "http://localhost/batikdesigngenerator/login.php");
     }
-
-    $conn = mysqli_connect("localhost", "root", "", "database_batik_galih");
     $cust_id = $_SESSION['id_customer'];
-    $query = "SELECT status FROM tbl_hasilbatik WHERE id_customer = '$cust_id' ORDER BY hasilbatik_id DESC LIMIT 1 ";
-    $sql = mysqli_query($conn, $query) or die(mysqli_error($conn));
-    
-    $get_status_data = mysqli_fetch_assoc($sql);
+    $queryComment = "SELECT status FROM tbl_hasilbatik WHERE id_customer = '$cust_id' ORDER BY hasilbatik_id DESC LIMIT 1 ";
+    $query = new UserCommand();
+    $get_status_data = $query->selectQuery($queryComment); 
     $status_data = $get_status_data['status'];
     
-
 ?>
 
 <!DOCTYPE html>

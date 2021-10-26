@@ -5,26 +5,23 @@
     // Functions
     require '_functions.php';
     require '_parameter.php';
-    
+    require('database/db_management/querycenter.php');
     // Cek sesi desain
     sesiDesain();
-    // die(gettype($_SESSION['colorchange']));
 
     $motifJml = count($_SESSION['motif_id']);
-
+    $callQuery = new UserCommand();
     if($motifJml>0){
         foreach($_SESSION['motif_id'] as $mtf){
-            $dataMotif = query("SELECT * FROM tbl_motif WHERE motif_id = ".$mtf)[0];
+            $dataMotif = $callQuery->selectQuery("SELECT * FROM tbl_motif WHERE motif_id = ".$mtf);
             $motifFile[] = $dataMotif['motif_file'];
             $motifNama[] = $dataMotif['motif_nama'];
         }
         $motifSVG  = cetakMotif($motifFile, 65);
         
-        // file javascript algoritma
         $algoritmaFile = algorithmSwitch($_SESSION["algoritma"],$motifJml);
     }
 
-    // die(print_r($_SESSION));
 ?>
 
 <!DOCTYPE html>

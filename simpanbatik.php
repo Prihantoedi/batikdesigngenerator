@@ -3,15 +3,13 @@
     
     // Functions
     require '_functions.php';
+    require('database/db_management/querycenter.php');
     require 'colortranslate.php';
 
-    // koneksi ke hasilbatik database untuk menghitung warna yang masuk sesuai minimal batch
-    $conn = mysqli_connect("localhost", "root", "", "database_batik_galih");
-    
-    
     // Mencari user yang memiliki status daftar tunggu, dan menghitung akumulasi warna yang sama digunakan
 
-    $waitingList = query("SELECT * FROM tbl_hasilbatik WHERE status = 'daftar tunggu' ");
+    $callQuery = new UserCommand();
+    $waitingList = $callQuery->selectQuery("SELECT * FROM tbl_hasilbatik WHERE status = 'daftar tunggu' ");
     $colorCount = array();
     $user_in_waiting = array(); // menampung semua user yang masih di status tunggu
 
@@ -338,12 +336,10 @@
                 var color_count_db = <?php echo json_encode($colorCount); ?>; // warna dari database
                 var color_design = <?php echo json_encode($colorDesign); ?>; // warna dari user yg sedang mendesain 
 
-                // console.log(color_design.length);
                 
                 var color_count_db_len = <?php echo json_encode($colorCountLength); ?>;
                 color_count_db_len = parseInt(color_count_db_len);
-
-                // var who_wait = [];            
+          
                 // Pengecekkan Batch
                 var num_ordered = document.getElementById("jumlah").value;
 
@@ -364,12 +360,12 @@
                         // meng-iterasi seluruh user waiting untuk dilihat penggunaan warnanya, kemudian dicocokkan jumlahnya dengan user yang sedang mendesain
                         for(const element in user_waiting){
                             var json_colnum = JSON.parse(user_waiting[element]);
-                            console.log(json_colnum);
+                    
 
                             
                             var hex_color_user_waiting = [json_colnum['warna1_hex'], json_colnum['warna2_hex'], json_colnum['warna3_hex'], json_colnum['warnabg_hex'] ]
                             
-                            // console.log(hex_color_user_waiting);
+                    
                             let get_color_num = json_colnum['num_of_color'];
                             
                             var dictionary = {"warna1_hex" : "jumlah_warna1", "warna2_hex" : "jumlah_warna2", "warna3_hex" : "jumlah_warna3", "warnabg_hex": "jumlah_warnaBg"};
@@ -387,10 +383,9 @@
                                         count_user++;
                                     }
                                 }
-                                // if(count_user == get_color_num){who_wait.push(json_colnum['id_order']);}
+                    
                             }
                         }
-                        // console.log(accumulation_color);
 
                         for(const property in accumulation_color){
                             if(accumulation_color[property] < 6){continue_process = false; break;}
@@ -409,45 +404,13 @@
 
                             var specialCaseModal = document.getElementById("btn-trigger");
                             specialCaseModal.click(); // asking confirmation
-                            // continue_process = false;
+                    
                         } else{
                             var saveBtn = document.getElementById("saveButton");
                             saveBtn.click();
                         }
     
-                        // for(var[key, value] of Object.entries(color_count_db)){
-                        //     color_count_db[key] = parseInt(value);
-                            
-                            
-                        //     // apabila ada warna yang sama antara user waiting dan user sekarang sedang mendesain:
-                        //     if(color_design.includes(key)){ 
-   
-                        //         color_count_db[key] = color_count_db[key] + from_color_design;
-
-
-                        //         if(color_count_db[key] < 6){
-                        //             var add_cost = document.getElementById("add-cost-desc");
-        
-                        //             if(from_color_design == 1) {add_cost.innerHTML = "75.000";}
-                        //             else if(from_color_design == 2){add_cost.innerHTML = "37.500";}
-                        //             else if(from_color_design == 3){add_cost.innerHTML = "25.000";}
-                        //             else if(from_color_design == 4){add_cost.innerHTML = "18.750";}
-                        //             else if(from_color_design == 5){add_cost.innerHTML = "15.000";}
-                        //             else {add_cost.innerHTML = 0;}
-
-                        //             var specialCaseModal = document.getElementById("btn-trigger");
-                        //             specialCaseModal.click(); // asking confirmation
-                        //             $continue_process = false;
-                        //         }
-                        //     }
-                            
-                        // } 
-
-                        // // process langsung berlanjut apabila jumlah pesanan < 6 namun sudah memenuhi batch
-                        // if($continue_process){ 
-                        //     var saveBtn = document.getElementById("saveButton");
-                        //     saveBtn.click();
-                        // }
+                      
 
                     }   else{
                         var add_cost = document.getElementById("add-cost-desc");

@@ -101,7 +101,6 @@
     $durasiHari = ceil($durasiJam / 8); // roundup
     
     $manufacturing_duration = $durasiHari; // durasi mentah proses pengerjaan batik
-    // die("man dur = ". $manufacturing_duration);
     $manufacturing_date = $tanggal;
 
 
