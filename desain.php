@@ -1,26 +1,17 @@
 <?php 
     // Start session
     session_start();
-    
-    // Functions
-    require '_functions.php';
     require '_parameter.php';
-    require('database/db_management/querycenter.php');
-    // Cek sesi desain
-    sesiDesain();
+    require 'controller/view_controller.php';
 
     $motifJml = count($_SESSION['motif_id']);
-    $callQuery = new UserCommand();
-    if($motifJml>0){
-        foreach($_SESSION['motif_id'] as $mtf){
-            $dataMotif = $callQuery->selectQuery("SELECT * FROM tbl_motif WHERE motif_id = ".$mtf);
-            $motifFile[] = $dataMotif['motif_file'];
-            $motifNama[] = $dataMotif['motif_nama'];
-        }
-        $motifSVG  = cetakMotif($motifFile, 65);
-        
-        $algoritmaFile = algorithmSwitch($_SESSION["algoritma"],$motifJml);
-    }
+    $call_controller = new ViewController();
+    $desain_controller = $call_controller->desainController($_SESSION['start'], $motifJml, $_SESSION['motif_id'], $_SESSION["algoritma"]);
+    $motifFile = $desain_controller['motif_file'];
+    $motifNama = $desain_controller['motif_nama'];
+    $motifSVG = $desain_controller['motif_svg'];
+    $algoritmaFile = $desain_controller['algoritma_file'];
+
 
 ?>
 

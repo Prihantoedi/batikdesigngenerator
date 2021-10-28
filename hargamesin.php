@@ -1,6 +1,7 @@
 <?php
 
     session_start();
+    require 'controller/view_controller.php';
 
     if(!isset($_SESSION['username_customer'])){
         echo "<script>window.location = 'login.php'</script>";
@@ -14,14 +15,20 @@
         unset($_SESSION['harga_old']);
     }
 
-    $conn = mysqli_connect("localhost", "root", "", "database_batik_galih");
-    $sql = mysqli_query($conn, "SELECT * FROM harga_mesin WHERE id = 1") or die(mysqli_error($conn));
-    $hargaNewMember = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_new'] = $hargaNewMember['harga'];
+    $callController = new AdminController();
+    $harga = $callController->hargaMesinController();
 
-    $sql = mysqli_query($conn, "SELECT * FROM harga_mesin WHERE id = 2") or die(mysqli_error($conn));
-    $hargaOldMember = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_old'] = $hargaOldMember['harga'];
+    $_SESSION['harga_new'] = $harga['harga_new_member'];
+    $_SESSION['harga_old'] = $harga['harga_old_member'];
+
+    // $conn = mysqli_connect("localhost", "root", "", "database_batik_galih");
+    // $sql = mysqli_query($conn, "SELECT * FROM harga_mesin WHERE id = 1") or die(mysqli_error($conn));
+    // $hargaNewMember = mysqli_fetch_assoc($sql);
+    // $_SESSION['harga_new'] = $hargaNewMember['harga'];
+
+    // $sql = mysqli_query($conn, "SELECT * FROM harga_mesin WHERE id = 2") or die(mysqli_error($conn));
+    // $hargaOldMember = mysqli_fetch_assoc($sql);
+    // $_SESSION['harga_old'] = $hargaOldMember['harga'];
 
 ?>
 

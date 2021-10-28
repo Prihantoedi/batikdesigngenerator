@@ -1,6 +1,7 @@
 <?php
 
     session_start();
+    require 'controller/view_controller.php';
 
     if(!isset($_SESSION['username_customer'])){
         echo "<script>window.location = 'login.php'</script>";
@@ -14,14 +15,12 @@
         unset($_SESSION['harga_colet']);
     }
 
-    $conn = mysqli_connect("localhost", "root", "", "database_batik_galih");
-    $sql = mysqli_query($conn, "SELECT * FROM harga_teknik WHERE id = 1") or die(mysqli_error($conn));
-    $hargaCelup = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_celup'] = $hargaCelup['harga'];
+    $callController = new AdminController();
+    $harga_teknik = $callController->hargaTeknikController();
+    
+    $_SESSION['harga_celup'] = $harga_teknik['celup'];
+    $_SESSION['harga_colet'] = $harga_teknik['colet'];
 
-    $sql = mysqli_query($conn, "SELECT * FROM harga_teknik WHERE id = 2") or die(mysqli_error($conn));
-    $hargaColet = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_colet'] = $hargaColet['harga'];
 
 ?>
 

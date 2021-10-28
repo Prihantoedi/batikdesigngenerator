@@ -2,6 +2,8 @@
 
     session_start();
 
+    require 'controller/view_controller.php';
+
     if(!isset($_SESSION['username_customer'])){
         echo "<script>window.location = 'login.php'</script>";
     }
@@ -46,57 +48,19 @@
         unset($_SESSION['harga_putih']);
     }
 
-    $conn = mysqli_connect("localhost", "root", "", "database_batik_galih");
-    
-    // Yellow IGK
-    $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 1") or die(mysqli_error($conn));
-    $hargaYellowIGK = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_yellowigk'] = $hargaYellowIGK['harga'];
+    $callController = new AdminController();
+    $harga_warna = $callController->hargaWarnaController();
 
-    // Yellow IRK
-    $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 2") or die(mysqli_error($conn));
-    $hargaYellowIRK = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_yellowirk'] = $hargaYellowIRK['harga'];
-
-    // ORange HR
-    $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 3") or die(mysqli_error($conn));
-    $hargaOrangeHR = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_orangehr'] = $hargaOrangeHR['harga'];
-
-    //Brown IRRD
-    $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 4") or die(mysqli_error($conn));
-    $hargaBrownIRRD = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_brownirrd'] = $hargaBrownIRRD['harga'];
-
-    // Blue 04B
-    $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 5") or die(mysqli_error($conn));
-    $hargaBlue048 = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_blue048'] = $hargaBlue048['harga'];
-
-    // Grey IRL
-    $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 6") or die(mysqli_error($conn));
-    $hargaGreyIRL = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_greyirl'] = $hargaGreyIRL['harga'];
-
-    // Violet 14R
-    $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 7") or die(mysqli_error($conn));
-    $hargaViolet14R = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_violet14r'] = $hargaViolet14R['harga'];
-
-    // Rose IR
-    $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 8") or die(mysqli_error($conn));
-    $hargaRoseIR = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_roseir'] = $hargaRoseIR['harga'];
-
-    // Green IB
-    $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 9") or die(mysqli_error($conn));
-    $hargaGreenIB = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_greenib'] = $hargaGreenIB['harga'];
-
-     // Putih
-    $sql = mysqli_query($conn, "SELECT * FROM harga_warna WHERE id = 10") or die(mysqli_error($conn));
-    $hargaPutih = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_putih'] = $hargaPutih['harga'];
+    $_SESSION['harga_yellowigk'] = $harga_warna["yellow_igk"];
+    $_SESSION['harga_yellowirk'] = $harga_warna["yellow_irk"];
+    $_SESSION['harga_orangehr'] = $harga_warna['orange_hr'];
+    $_SESSION['harga_brownirrd'] = $harga_warna['brown_irrd'];
+    $_SESSION['harga_blue048'] = $harga_warna['blue_04b'];
+    $_SESSION['harga_greyirl'] = $harga_warna['grey_irl'];
+    $_SESSION['harga_violet14r'] = $harga_warna['violet_14r'];
+    $_SESSION['harga_roseir'] = $harga_warna['rose_ir'];
+    $_SESSION['harga_greenib'] = $harga_warna['green_ib'];
+    $_SESSION['harga_putih'] = $harga_warna['putih'];
 
 ?>
 
@@ -422,7 +386,7 @@
                                 <!-- Abu-abu -->
                             <h2 class="h5">Harga Warna <span class="h5" style="color: #143d30;">Green IB</span></h2>
 
-                            <form method="post" action="processhargawarna.php?id=8">
+                            <form method="post" action="processhargawarna.php?id=9">
                                 <div class="form-group w-100">
                                     <label for="exampleInputEmail1">Harga Lama</label>
                                     <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="<?php echo $_SESSION['harga_greenib']?>" readonly>

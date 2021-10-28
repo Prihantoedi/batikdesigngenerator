@@ -3,7 +3,6 @@
     session_start();
     require('database/db_management/querycenter.php');
 
-    $conn = mysqli_connect("localhost", "root", "", "database_batik_galih");
 
     if(isset($_POST['submit'])){
         $username = $_POST['username'];

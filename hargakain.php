@@ -1,6 +1,7 @@
 <?php
 
     session_start();
+    require 'controller/view_controller.php';
 
     if(!isset($_SESSION['username_customer'])){
         echo "<script>window.location = 'login.php'</script>";
@@ -14,10 +15,9 @@
         unset($_SESSION['harga_old']);
     }
 
-    $conn = mysqli_connect("localhost", "root", "", "database_batik_galih");
-    $sql = mysqli_query($conn, "SELECT * FROM harga_kain WHERE id = 1") or die(mysqli_error($conn));
-    $hargaKain = mysqli_fetch_assoc($sql);
-    $_SESSION['harga_new'] = $hargaKain['harga'];
+    $callController = new AdminController();
+    $hargaKain = $callController->hargaKainController();
+    $_SESSION['harga_new'] = $hargaKain; 
   
 ?>
 

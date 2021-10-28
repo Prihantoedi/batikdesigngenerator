@@ -64,7 +64,7 @@
             $this->queryComment = $anyComment;
             $build_for_select = new setUpConnection();
             $conn_for_select = $build_for_select->makeConnection();
-            $result_select = mysqli_query($conn_for_select, $this->queryComment);
+            $result_select = mysqli_query($conn_for_select, $this->queryComment) or die(mysqli_error($conn_for_select));
             $rows = [];
             while($row = mysqli_fetch_assoc($result_select)){
                 $rows [] = $row;
@@ -74,11 +74,16 @@
 
         }
 
+        public function updateQuery($updateComment){
+            $this->queryComment = $updateComment;
+            $build_for_update = new setUpConnection();
+            $conn_for_update = $build_for_update->makeConnection();
+            return mysqli_query($conn_for_update, $this->queryComment) or die(mysqli_error($conn_for_update));
+        }
+
 
     }
 
-
-        //select what? ,table name, nilai yang mau diambil, order?, limit?
 
     
 

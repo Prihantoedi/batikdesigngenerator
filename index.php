@@ -1,18 +1,13 @@
 <?php 
     session_start();
-    require('_functions.php');
-    require('database/db_management/querycenter.php');
+    require('controller/view_controller.php');
 
     if(!isset($_SESSION['username_customer'])){
         // echo "<script>window.location = 'login.php'</script>";
         header("Location: ". "http://localhost/batikdesigngenerator/login.php");
     }
-    $cust_id = $_SESSION['id_customer'];
-    $queryComment = "SELECT status FROM tbl_hasilbatik WHERE id_customer = '$cust_id' ORDER BY hasilbatik_id DESC LIMIT 1 ";
-    $query = new UserCommand();
-    $get_status_data = $query->selectQuery($queryComment); 
-    $status_data = $get_status_data['status'];
-    
+    $viewController = new ViewController();
+    $status_data = $viewController->indexController($_SESSION['id_customer']);    
 ?>
 
 <!DOCTYPE html>
@@ -62,11 +57,7 @@
                     <td>:</td>
                     <td>
                         <input type="text" style="width:75px; border: none;" name="member" id="member" value="<?php echo $_SESSION['jenis_customer'] ?>" readonly required>
-                        <!-- <select name="member" id="member" style="width:200px;" required>
-                            <option value="">Pilih Jenis Member</option>
-                            <option value="member">Member</option>
-                            <option value="new">New Customer</option>                  
-                        </select> -->
+                
                     </td>
                 </tr>
                 <tr>

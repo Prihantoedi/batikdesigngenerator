@@ -1,6 +1,6 @@
 <?php
     require '_functions.php';
-    require 'colortranslate.php';
+    // require 'colortranslate.php';
     echo 'Saving... <br>';
     session_start();
 

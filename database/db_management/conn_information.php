@@ -18,8 +18,4 @@
     define("QUE_VALUE", $query_value);
     define("QUE_COMMENT", $query_comment);
 
-
-    
-
-
 ?>
