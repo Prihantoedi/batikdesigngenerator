@@ -149,9 +149,85 @@
 
 
             return ["motif_jumlah" => $motif_jml, "motif_svg" => $motif_svg, "algoritma_file" => $algoritma_file, "warna_1" => $warna_1, "warna_2" => $warna_2, "warna_3" => $warna_3, "color_count" => $color_count,  "color_count_length" => $color_count_length, "color_design" => $color_design, "user_in_waiting" => $user_in_waiting];
-
-
         }
+
+        public function hasilBatikController($customer_id, $customer_type){
+            $query = new UserCommand();
+            $total_data_comment = "SELECT COUNT(*) as total FROM tbl_hasilbatik WHERE id_customer = $customer_id";
+            $get_total_data = $query->selectQuery($total_data_comment);
+            $total = $get_total_data['total'];
+            
+            if($customer_type == "baru"){
+                $total_order_comment = "SELECT COUNT(*) as total FROM tbl_hasilbatik WHERE id_customer = $customer_id";
+                $get_total_order = $query->selectQuery($total_order_comment);
+                $total = $get_total_order['total'];
+
+                if($total >= 10){
+                    $update_total_comment = "UPDATE customers SET jenis = 'lama' WHERE id = $customer_id";
+                    $update_customer_type =  $query->updateQuery($update_total_comment);
+                    echo '<script language="javascript">';
+                    echo 'alert("Selamat! Anda menjadi member lama dan mendapat potongan harga!")';
+                    echo '</script>';
+                    $customer_type = "lama";
+                }
+            }
+
+            $hasil_batik_comment = "SELECT tbl_hasilbatik.hasilbatik_id, hasilbatik_file, hasilbatik_filehp, hasilbatik_tanggal,
+                                hasilbatik_kreator, hasilbatik_namakarya, jumlahPembelian, teknik_pewarnaan, warna1, warna2, warna3, warnaBg, durasi, harga, status, status_bayar,
+                                delivery_time,
+                                tbl_algoritma.algoritma_nama 
+                                FROM tbl_hasilbatik
+                                INNER JOIN tbl_algoritma ON tbl_hasilbatik.algoritma_id = tbl_algoritma.algoritma_id
+                                WHERE id_customer = $customer_id
+                                ORDER BY hasilbatik_tanggal DESC
+                                LIMIT 10
+                                ";
+
+            $hasil_batik = $query->selectQuery($hasil_batik_comment);
+
+            foreach($hasil_batik as $tbl){
+                $hasilbatikId[]  = $tbl['hasilbatik_id'];
+                $file_names[]    = $tbl['hasilbatik_file'];
+                $file_names_hp[] = $tbl['hasilbatik_filehp'];
+                $tanggals  []    = $tbl['hasilbatik_tanggal'];
+                $kreators  []    = $tbl['hasilbatik_kreator'];
+                $namakaryas[]    = $tbl['hasilbatik_namakarya'];
+                $algoritmas[]    = ucwords($tbl['algoritma_nama']);
+                $motifId[]       = cariIdMotifdariHasil($tbl['hasilbatik_id']);
+
+                $jumlah[] = $tbl['jumlahPembelian'];
+                $teknik[] = $tbl['teknik_pewarnaan'];
+                $warna1[] = $tbl['warna1'];
+                $warna2[] = $tbl['warna2'];
+                $warna3[] = $tbl['warna3'];
+                $warnaBg[] = $tbl['warnaBg'];
+                $durasi[] = $tbl['durasi'];
+                $harga[] = $tbl['harga'];
+                $status[] = $tbl['status'];
+                $statusBayar[] = $tbl['status_bayar'];
+                $deliveryTime[] = $tbl['delivery_time'];
+            }
+            $hasil_batik_num = count($hasil_batik);
+            if($hasil_batik_num > 0){
+                $order_data = ["hasilbatik_id" => $hasilbatikId, "file_name" => $file_names, "file_name_hp" => $file_names_hp, "tanggal" => $tanggals, "kreator" => $kreators, "nama_karya" => $namakaryas,
+                            "algoritma" => $algoritmas, "motif_id" => $motifId, "jumlah" => $jumlah, "teknik" => $teknik, "warna_1" => $warna1, "warna_2" => $warna2, "warna_3" => $warna3, "warna_bg" => $warnaBg, "durasi" => $durasi, "harga" => $harga,
+                            "status" => $status, "status_bayar" =>  $statusBayar, "delivery_time" => $deliveryTime];
+                foreach($motifId as $mtfId){
+                    $karakter[] = cariKarakterMotifBanyak($mtfId);
+                }
+
+                $order_data["karakter"]= $karakter;
+            } else{
+                $order_data = null;
+            }
+
+
+            return ["customer_type" => $customer_type, "order_data" => $order_data, "hasil_batik_jum" => $hasil_batik_num];
+           
+            
+        }
+
+
     }
 
     class AdminController{

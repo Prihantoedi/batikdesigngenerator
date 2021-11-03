@@ -2,76 +2,16 @@
 
     session_start();
 
-    require '_functions.php';
+    require ('controller/view_controller.php');
 
-    $idCustomer = $_GET['id'];
-
-    if ($_SESSION['jenis_customer'] == "baru") {
-
-        $conn = mysqli_connect("localhost", "root", "", "database_batik_galih");
-        $query = "SELECT COUNT(*) as total FROM tbl_hasilbatik WHERE id_customer = $idCustomer";
-        $sql = mysqli_query($conn, $query) or die(mysqli_error($conn));
-        $data = mysqli_fetch_assoc($sql);
-        $total = $data['total'];
-
-        if ($total >= 10) {
-            $query = "UPDATE customers SET jenis = 'lama' WHERE id = $idCustomer";
-            $sql = mysqli_query($conn, $query) or die(mysqli_error($conn));
-            echo '<script language="javascript">';
-            echo 'alert("Selamat! Anda menjadi member lama dan mendapat potongan harga!")';
-            echo '</script>';
-            $_SESSION['jenis_customer'] = "lama";
-        }
-
-    }
-
- 
+    $viewController = new ViewController();
+    $result_order_data =  $viewController->hasilBatikController($_GET['id'], $_SESSION['jenis_customer']);
     
-    // Query ke tabel
-    $hasilbatikTbl = query("SELECT tbl_hasilbatik.hasilbatik_id, hasilbatik_file, hasilbatik_filehp, hasilbatik_tanggal,
-                            hasilbatik_kreator, hasilbatik_namakarya, jumlahPembelian, teknik_pewarnaan, warna1, warna2, warna3, warnaBg, durasi, harga, status, status_bayar,
-                            delivery_time,
-                            tbl_algoritma.algoritma_nama 
-                            FROM tbl_hasilbatik
-                            INNER JOIN tbl_algoritma ON tbl_hasilbatik.algoritma_id = tbl_algoritma.algoritma_id
-                            WHERE id_customer = $idCustomer
-                            ORDER BY hasilbatik_tanggal DESC
-                            LIMIT 10
-                            ");
+    $_SESSION['jenis_customer'] = $result_order_data['customer_type'];
 
-    foreach($hasilbatikTbl as $tbl){
-        $hasilbatikId[]  = $tbl['hasilbatik_id'];
-        $file_names[]    = $tbl['hasilbatik_file'];
-        $file_names_hp[] = $tbl['hasilbatik_filehp'];
-        $tanggals  []    = $tbl['hasilbatik_tanggal'];
-        $kreators  []    = $tbl['hasilbatik_kreator'];
-        $namakaryas[]    = $tbl['hasilbatik_namakarya'];
-        $algoritmas[]    = ucwords($tbl['algoritma_nama']);
-        $motifId[]       = cariIdMotifdariHasil($tbl['hasilbatik_id']);
+    $order_data = $result_order_data['order_data'];
+    $hasilbatikJml = $result_order_data['hasil_batik_jum'];
 
-        $jumlah[] = $tbl['jumlahPembelian'];
-        $teknik[] = $tbl['teknik_pewarnaan'];
-        $warna1[] = $tbl['warna1'];
-        $warna2[] = $tbl['warna2'];
-        $warna3[] = $tbl['warna3'];
-        $warnaBg[] = $tbl['warnaBg'];
-        $durasi[] = $tbl['durasi'];
-        $harga[] = $tbl['harga'];
-        $status[] = $tbl['status'];
-        $statusBayar[] = $tbl['status_bayar'];
-        $deliveryTime[] = $tbl['delivery_time'];
-    }
-
-    $hasilbatikJml = count($hasilbatikTbl);
-    
-    if ($hasilbatikJml != 0) {
-        foreach($motifId as $mtfId){
- 
-            $karakterS[]   = cariKarakterMotifBanyak($mtfId);
-        }
-    }
-
-    
 ?>
 
 <!DOCTYPE html>
@@ -144,62 +84,62 @@
             <tr style="padding: 10px;">
                 <td class="nomor-urut" rowspan="16"><?php echo $i+1 ?></td>
                 <td>Nama File</td>
-                <td><?php echo $file_names[$i] ?></td>
+                <td><?php echo $order_data['file_name'][$i] ?></td>
                 <td style="text-align:center;" rowspan="16">
                 <h4>Model Warna</h4>
-                    <object data="hasilbatik/<?php echo $file_names[$i] ?>" type="image/svg+xml">Hasil</object>
+                    <object data="hasilbatik/<?php echo $order_data['file_name'][$i] ?>" type="image/svg+xml">Hasil</object>
                     <br>
-                    <a href="hasilbatik/<?php echo $file_names[$i] ?>" download>Unduh Batik</a> <b> / </b>
-                    <a href=".desainhasil.php?hasilbatik_id=<?php echo $hasilbatikId[$i] ?>">Edit Batik</a>
+                    <a href="hasilbatik/<?php echo $order_data['file_name'][$i] ?>" download>Unduh Batik</a> <b> / </b>
+                    <a href=".desainhasil.php?hasilbatik_id=<?php echo $order_data['hasilbatik_id'][$i] ?>">Edit Batik</a>
                     <div style="margin-top: 30px;"></div>
                     <h4>Model Hitam Putih</h4>
-                    <object data="hasilbatik/<?php echo $file_names_hp[$i] ?>" type="image/svg+xml">Hasil</object>
+                    <object data="hasilbatik/<?php echo $order_data['file_name_hp'][$i] ?>" type="image/svg+xml">Hasil</object>
                     <br>
-                    <a href="hasilbatik/<?php echo $file_names_hp[$i] ?>" download>Unduh Batik</a>
+                    <a href="hasilbatik/<?php echo $order_data['file_name_hp'][$i] ?>" download>Unduh Batik</a>
                 </td>
             </tr>
             <tr>
                 <td>Judul Karya</td>
-                <td><?php echo $namakaryas[$i] ?></td>
+                <td><?php echo $order_data['nama_karya'][$i] ?></td>
             </tr>
             <tr>
                 <td>Kreator</td>
-                <td><?php echo $kreators[$i] ?></td>
+                <td><?php echo $order_data['kreator'][$i] ?></td>
             </tr>
             <tr>
                 <td>Tanggal dibuat</td>
-                <td><?php echo $tanggals[$i] ?></td>
+                <td><?php echo $order_data['tanggal'][$i] ?></td>
             </tr>
             <tr>
                 <td>Pola</td>
-                <td><?php echo $algoritmas[$i] ?></td>
+                <td><?php echo $order_data['algoritma'][$i] ?></td>
             </tr>
             <tr>
                 <td>Karakter</td>
                 <td class="cetakkarakter">
-                    <?php echo karakterCetak($karakterS[$i]) ?>
+                    <?php echo karakterCetak($order_data['karakter'][$i]) ?>
                 </td>
             </tr>
             <tr>
                 <td>Jumlah Pembelian</td>
                 <td>
-                    <?php echo $jumlah[$i] ?>
+                    <?php echo $order_data['jumlah'][$i] ?>
                 </td>
             </tr>
             <tr>
                 <td>Teknik Pewarnaan</td>
                 <td>
-                    <?php echo $teknik[$i] ?>
+                    <?php echo $order_data['teknik'][$i] ?>
                 </td>
             </tr>
             <tr>
                 <td>Warna Motif 1</td>
                 <td>
                     <?php
-                        if ($warna1[$i] == "") {
+                        if ($order_data['warna_1'][$i] == "") {
                             echo " - ";
                         } else {
-                            echo $warna1[$i];
+                            echo $order_data['warna_1'][$i];
                         }
                     ?>
                 </td>
@@ -208,10 +148,10 @@
                 <td>Warna Motif 2</td>
                 <td>
                     <?php
-                        if ($warna2[$i] == "") {
+                        if ($order_data['warna_2'][$i] == "") {
                             echo " - ";
                         } else {
-                            echo $warna2[$i];
+                            echo $order_data['warna_2'][$i];
                         }
                     ?>
                 </td>
@@ -220,10 +160,10 @@
                 <td>Warna Motif 3</td>
                 <td>
                     <?php
-                        if ($warna3[$i] == "") {
+                        if ($order_data['warna_3'][$i] == "") {
                             echo " - ";
                         } else {
-                            echo $warna3[$i];
+                            echo $order_data['warna_3'][$i];
                         }
                     ?>
                 </td>
@@ -232,10 +172,10 @@
                 <td>Warna Background</td>
                 <td>
                     <?php
-                        if ($warnaBg[$i] == "") {
+                        if ($order_data['warna_bg'][$i] == "") {
                             echo " - ";
                         } else {
-                            echo $warnaBg[$i];
+                            echo $order_data['warna_bg'][$i];
                         }
                     ?>
                 </td>
@@ -244,7 +184,7 @@
                 <td>Processing Time (PT) + Delivery Time (DT)</td>
                 <td>
                     <?php 
-                        echo ($status[$i] == "dalam proses") ? $durasi[$i]. " hari PT + " . $deliveryTime[$i] . " hari DT" : "menunggu order selanjutnya";
+                        echo ($order_data['status'][$i] == "dalam proses") ? $order_data['durasi'][$i]. " hari PT + " . $order_data['delivery_time'][$i] . " hari DT" : "menunggu order selanjutnya";
                     ?>
 
                 </td>
@@ -252,24 +192,24 @@
             <tr>
                 <td>Harga</td>
                 <td>
-                    <?php echo "Rp. " . number_format($harga[$i],2,",",".");?>
+                    <?php echo "Rp. " . number_format($order_data['harga'][$i],2,",",".");?>
                 </td>
             </tr>
             <tr>
                 <td>Status Process</td>
                 <td>
-                    <?php echo $status[$i];?>
+                    <?php echo $order_data['status'][$i];?>
                 </td>
             </tr>
             <tr style="padding: 20px;">
                 <td>Status Bayar</td>
                 <td>
                     <?php 
-                        if ($statusBayar[$i] == "belum") {
-                            echo "<a class='button button1' href='processbayar.php?id=" . $hasilbatikId[$i] . "'>Bayar</a>";
+                        if ($order_data['status_bayar'][$i] == "belum") {
+                            echo "<a class='button button1' href='processbayar.php?id=" . $order_data['hasilbatik_id'][$i] . "'>Bayar</a>";
                         }
                         else{
-                            echo $statusBayar[$i];
+                            echo $order_data['status_bayar'][$i];
                         }
                     ?>
                 </td>
