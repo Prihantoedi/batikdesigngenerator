@@ -12,7 +12,7 @@
     $motifSVG = $desain_controller['motif_svg'];
     $algoritmaFile = $desain_controller['algoritma_file'];
 
-
+    // die(print_r($_SESSION['motif_id']));
 ?>
 
 <!DOCTYPE html>
