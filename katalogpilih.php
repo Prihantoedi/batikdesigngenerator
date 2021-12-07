@@ -13,6 +13,7 @@
 
     if ( isset($_GET['submitmotif'])){
         $_SESSION['motif_id'][$_GET['motif_indeks']] = $_GET['motif_id'];
+
         unset($_SESSION['motif_indeks']);
 
         header('location:desain.php');

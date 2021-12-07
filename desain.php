@@ -12,7 +12,6 @@
     $motifSVG = $desain_controller['motif_svg'];
     $algoritmaFile = $desain_controller['algoritma_file'];
 
-    // die(print_r($_SESSION['motif_id']));
 ?>
 
 <!DOCTYPE html>
@@ -311,6 +310,7 @@
         // Variabel Motif
         motifJml        = <?php echo $motifJml ?>;
         motifTagHTML    = document.querySelectorAll("svg");
+        console.log(motifTagHTML);
 
         // Variabel ukuran object asli
         var realObjSizex = [];
