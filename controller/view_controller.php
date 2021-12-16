@@ -8,7 +8,7 @@
             $queryComment = "SELECT status FROM tbl_hasilbatik WHERE id_customer = '$customer_id' ORDER BY hasilbatik_id DESC LIMIT 1 ";
             $query = new UserCommand();
             $get_status_data = $query->selectQuery($queryComment); 
-            $status_data = $get_status_data['status'];
+            $status_data = array_key_exists('status', $get_status_data) ? $get_status_data['status'] : null;
             return $status_data;
         }
 

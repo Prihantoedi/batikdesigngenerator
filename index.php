@@ -83,10 +83,12 @@
             </table>
             <img id="ilustrasimotif" style="height:240px; margin-top:10px;margin-side: auto;" src="img/_Ilustrasi Berderet.png"></img>
             <br>
-            <div id="order-status">Status pesanan : <?php echo  $status_data; ?></div>
+            <?php 
+                if(!is_null($status_data)){ ?>
+                    <div id="order-status">Status pesanan : <?php echo  $status_data; ?></div>
+            <?php } ?>    
+    
             <div id="logoutBtn"><a href="processlogout.php">Log out</a></div> 
-            
-            
         </form>
 
         <p id="halamanlain"><a href="hasilbatik.php?id=<?php echo $_SESSION['id_customer'] ?>">Hasil desain</a> ||| <a href="katalog.php">Katalog Motif</a>

@@ -1,12 +1,5 @@
 <?php 
 
-function sesiDesain(){
-	if (!isset($_SESSION['start'])){
-		
-    }
-}
-
-
 function cmToPixel($value){
 	return value*37.795276;
 }
