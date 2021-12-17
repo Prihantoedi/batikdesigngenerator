@@ -1,22 +1,11 @@
 <?php
-
+    require('database/db_management/querycenter.php');
     $conn = mysqli_connect("localhost", "root", "", "database_batik_galih");
+    $register_action = new UserCommand();
 
     if(isset($_POST['submit'])){
-        $nama = $_POST['nama'];
-        $no_telp = $_POST['telepon'];
-        $email = $_POST['email'];
-        $pekerjaan = $_POST['pekerjaan'];
-        $daerah = $_POST['daerah'];
-        $username = $_POST['username'];
-        $password = $_POST['password'];
-        $jenis = "baru";
-        $role = "member";
 
-        $query = "INSERT INTO customers (nama, no_telp, email, pekerjaan, daerah, username, password, jenis, role) 
-                VALUES ('$nama', '$no_telp', '$email', '$pekerjaan', '$daerah', '$username', '$password', '$jenis', '$role')";
-        $sql = mysqli_query($conn, $query) or die(mysqli_error($conn));
-
+        $sql = $register_action->insertQuery("INSERT", $_POST);
         if(!$sql){
             echo '<script language="javascript">';
             echo 'alert("Register Gagal!!!")';

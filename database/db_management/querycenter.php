@@ -81,6 +81,33 @@
             return mysqli_query($conn_for_update, $this->queryComment) or die(mysqli_error($conn_for_update));
         }
 
+        public function insertQuery ($insertComment, $regInfo = null, $register = True){
+            $this->queryComment = $insertComment;
+            $build_for_insert = new setUpConnection();
+            $conn_for_insert = $build_for_insert->makeConnection();
+            
+            $nama = $_POST['nama'];
+
+            if($register){
+                $no_telp = $regInfo['telepon'];
+                $email = $regInfo['email'];
+                $pekerjaan = $regInfo['pekerjaan'];
+                $daerah = $regInfo['daerah'];
+                $username = $regInfo['username'];
+                $password = $regInfo['password'];
+                $jenis = "baru";
+                $role = "member";
+                
+                $query_for_register = $this->queryComment." INTO customers (nama, no_telp, email, pekerjaan, daerah, username, password, jenis, role) 
+                                    VALUES ('$nama', '$no_telp', '$email', '$pekerjaan', '$daerah', '$username', '$password', '$jenis', '$role')";
+                return mysqli_query($conn_for_insert, $query_for_register);
+
+            } else{
+                return mysqli_query($conn_for_insert, $this->queryComment) or die(mysqli_error($conn_for_insert));
+            }
+            
+        }
+
 
     }
 
