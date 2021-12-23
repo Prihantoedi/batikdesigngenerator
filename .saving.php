@@ -1,33 +1,63 @@
 <?php
+    session_start();
     require '_functions.php';
     // require 'colortranslate.php';
     echo 'Saving... <br>';
-    session_start();
-
     
     // Where the file should be saved to
     date_default_timezone_set('Asia/Jakarta');
     $filename ="hbatik_".date('mdY_His').".svg";
     $filenameHp = "hbatik_Hp_".date('mdY_His').".svg";
-    $path = "hasilbatik/".$filename; //hbatik_".date('mdY_His').".svg"; 
+
+    $path = "hasilbatik/".$filename; 
     $pathHp = "hasilbatik/".$filenameHp;
     // Download link
     $link = $_SESSION['svgBatik'];
+    $jmlmotif = $_SESSION['motifJml'];
 
-    // Download link hitam putih
-    $linkHp = $_SESSION['svgBatikHp'];
+    $motifClass = $jmlmotif == "1" ? ["first-motif"] : ($jmlmotif == "2" ? ["first-motif", "second-motif"] : ["first-motif", "second-motif", "third-motif"]);
+
+    // Konversi file motif warna ke hitam putih
+    $getFileContent = file_get_contents($link);
+    
+    $svgDoc = new DOMDocument();
+    $svgDoc->loadXML($getFileContent);
+
+    $svgDoc->preserveWhiteSpace = false;
+    $xpath = new DOMXPath($svgDoc);
+    $xpath->registerNamespace('svg','http://www.w3.org/2000/svg');
+
+    // Merubah warna kanvas ke putih
+
+    $get_canvas = $xpath->query("//svg:rect");
+    if($get_canvas){
+        $get_canvas[0]->setAttribute("style", "fill: white");
+    } else{
+        "something wrong happen, please check again your input !!!";
+    }
+
+    // merubah warna motif dari berwarna ke hitam putih
+    foreach($motifClass as $mc){
+        $get_motif = $xpath->query("//svg:g[@class='" .$mc."']");
+        foreach($get_motif as $gm){
+            $gm->setAttribute("fill", "#000000");
+        }
+    }
+    $getFileContent = $svgDoc->saveXML($svgDoc);
+    
 
     // Save SVG
     file_put_contents($path, file_get_contents($link));
 
     // Save SVG Hitam putih
-    file_put_contents($pathHp, file_get_contents($linkHp));
+    file_put_contents($pathHp, $getFileContent);
+    
     $karakter_id = '';
     $tanggal     = date('Y-m-d H:i:s');
     $kreator     = $_SESSION['nama_customer'];
     $namakarya   = $_SESSION['namakarya'];
     $algoritma   = cariAlgoritma($_SESSION['algoritma'])[0]["algoritma_id"];
-    $jmlmotif    = $_SESSION['motifJml'];
+    
     $widthCanv   = $_SESSION['widthCanv'];
     $heightCanv  = $_SESSION['heightCanv'];
     $paddingTop  = $_SESSION['paddingTop'];
@@ -607,7 +637,20 @@
         echo "Error: " . $query . "<br>" . mysqli_error($conn);
     }
     
-    header('location:hasilbatik.php?id=' . $idCustomer);
-    exit;  
+    // header('location:hasilbatik.php?id=' . $idCustomer);
+    // exit;  
 
  ?>
+
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Processing</title>
+ </head>
+ <body>
+     <script></script>
+ </body>
+ </html>

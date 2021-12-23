@@ -40,6 +40,7 @@
 
         public function simpanBatikController($motif_id, $warna_bg, $warna_1, $warna_2, $warna_3, $algoritma){
            
+           
             // mendeteksi jumlah warna yang digunakan user saat ini
             $motif_jml = count($motif_id);
             $color_design = [];
@@ -76,79 +77,86 @@
 
             $waiting_list = $query->selectQuery("SELECT * FROM tbl_hasilbatik WHERE status = 'daftar tunggu' ");
 
-            $color_count = array();
-            $user_in_waiting = array();
             
-            // untuk status user yang masih di daftar tunggu, data yang dibutuhkan adalah:
-            // hasilbatik_id, warna1, jumlah warna1, warna2, jumlah warna2, warna3, jumlah warna3, warna background, jumlah warna background-
-            // dan id orderan terakhir yang sudah masuk dalam process (last_id_in_process);
-            // setiap id yang masih dalam daftar tunggu akan memegang id terakhir yang on process;
-            
-            foreach($waiting_list as $waiting){
-        
-                $color1_hex = colorToHex($waiting["warna1"]);
-                $color2_hex = colorToHex($waiting["warna2"]);
-                $color3_hex = colorToHex($waiting["warna3"]);
-                $colorbg_hex = colorToHex($waiting["warnaBg"]);
-                        
+            if(count($waiting_list) > 0){
+                $color_count = array();
+                $user_in_waiting = array();
                 
-                if(array_key_exists($color1_hex, $color_count)){ $color_count[$color1_hex] = $color_count[$color1_hex] + $waiting["jumlah_warna1"];}
-                else $color_count[$color1_hex] = $waiting["jumlah_warna1"];
-        
-                if(array_key_exists($color2_hex, $color_count)){ $color_count[$color2_hex] = $color_count[$color2_hex] + $waiting["jumlah_warna2"];}
-                else $color_count[$color2_hex] = $waiting["jumlah_warna2"];
+                // untuk status user yang masih di daftar tunggu, data yang dibutuhkan adalah:
+                // hasilbatik_id, warna1, jumlah warna1, warna2, jumlah warna2, warna3, jumlah warna3, warna background, jumlah warna background-
+                // dan id orderan terakhir yang sudah masuk dalam process (last_id_in_process);
+                // setiap id yang masih dalam daftar tunggu akan memegang id terakhir yang on process;
                 
-                if(array_key_exists($color3_hex, $color_count)){ $color_count[$color3_hex] = $color_count[$color3_hex] + $waiting["jumlah_warna3"];}
-                else $color_count[$color3_hex] = $waiting["jumlah_warna3"];
-        
-                if(array_key_exists($colorbg_hex, $color_count)){ $color_count[$colorbg_hex] = $color_count[$colorbg_hex] + $waiting["jumlah_warnabg"];}
-                else $color_count[$colorbg_hex] = $waiting["jumlah_warnabg"];
-        
-                // proses menampung semua user yang masih status tunggu:
-                $user_wait_obj = new stdClass();
-                $user_wait_obj->id_order= $waiting['hasilbatik_id'];
-                $count_color_used = [];
-        
-                $user_wait_obj->warna1 = $waiting['warna1'];
-                $user_wait_obj->warna1_hex = $color1_hex;
-                $user_wait_obj->jumlah_warna1 = $waiting['jumlah_warna1'];
-                if($user_wait_obj->warna1 != "" && !in_array($user_wait_obj->warna1, $count_color_used)){array_push($count_color_used, $user_wait_obj->warna1);}
-        
-                $user_wait_obj->warna2 = $waiting['warna2'];
-                $user_wait_obj->warna2_hex = $color2_hex;
-                $user_wait_obj->jumlah_warna2 = $waiting['jumlah_warna2'];
-                if($user_wait_obj->warna2 != "" && !in_array($user_wait_obj->warna2, $count_color_used)){array_push($count_color_used, $user_wait_obj->warna2);}
-        
-                $user_wait_obj->warna3 = $waiting['warna3'];
-                $user_wait_obj->warna3_hex = $color3_hex;
-                $user_wait_obj->jumlah_warna3 = $waiting['jumlah_warna3'];
-                if($user_wait_obj->warna3 != "" && !in_array($user_wait_obj->warna3, $count_color_used)){array_push($count_color_used, $user_wait_obj->warna3);}
-        
-                $user_wait_obj->warna_bg = $waiting['warnaBg'];
-                $user_wait_obj->warnabg_hex = $colorbg_hex;
-                $user_wait_obj->jumlah_warnaBg = $waiting['jumlah_warnabg'];
-                if($user_wait_obj->warna_bg != "" && !in_array($user_wait_obj->warna_bg, $count_color_used)){array_push($count_color_used, $user_wait_obj->warna_bg);}
-        
-                $user_wait_obj->manufact_duration = $waiting['manufacturing_duration'];
-                $user_wait_obj->manufact_date = $waiting['manufacturing_date'];
-                $user_wait_obj->status = $waiting['status'];
-        
-                $user_wait_obj->last_id_process = $waiting['last_id_in_process']; // id order terakrhi dengan status dalam proses
-                $user_wait_obj->coloring_method = $waiting['teknik_pewarnaan'];
-                // Untuk mentrace berapa macam warna yang digunakan oleh pembeli:
-                $user_wait_obj->num_of_color = count($count_color_used);
-        
-        
+                foreach($waiting_list as $waiting){
             
-                $make_json =  json_encode($user_wait_obj);
-        
-                array_push($user_in_waiting, $make_json);
+                    $color1_hex = colorToHex($waiting["warna1"]);
+                    $color2_hex = colorToHex($waiting["warna2"]);
+                    $color3_hex = colorToHex($waiting["warna3"]);
+                    $colorbg_hex = colorToHex($waiting["warnaBg"]);
+                            
+                    
+                    if(array_key_exists($color1_hex, $color_count)){ $color_count[$color1_hex] = $color_count[$color1_hex] + $waiting["jumlah_warna1"];}
+                    else $color_count[$color1_hex] = $waiting["jumlah_warna1"];
+            
+                    if(array_key_exists($color2_hex, $color_count)){ $color_count[$color2_hex] = $color_count[$color2_hex] + $waiting["jumlah_warna2"];}
+                    else $color_count[$color2_hex] = $waiting["jumlah_warna2"];
+                    
+                    if(array_key_exists($color3_hex, $color_count)){ $color_count[$color3_hex] = $color_count[$color3_hex] + $waiting["jumlah_warna3"];}
+                    else $color_count[$color3_hex] = $waiting["jumlah_warna3"];
+            
+                    if(array_key_exists($colorbg_hex, $color_count)){ $color_count[$colorbg_hex] = $color_count[$colorbg_hex] + $waiting["jumlah_warnabg"];}
+                    else $color_count[$colorbg_hex] = $waiting["jumlah_warnabg"];
+            
+                    // proses menampung semua user yang masih status tunggu:
+                    $user_wait_obj = new stdClass();
+                    $user_wait_obj->id_order= $waiting['hasilbatik_id'];
+                    $count_color_used = [];
+            
+                    $user_wait_obj->warna1 = $waiting['warna1'];
+                    $user_wait_obj->warna1_hex = $color1_hex;
+                    $user_wait_obj->jumlah_warna1 = $waiting['jumlah_warna1'];
+                    if($user_wait_obj->warna1 != "" && !in_array($user_wait_obj->warna1, $count_color_used)){array_push($count_color_used, $user_wait_obj->warna1);}
+            
+                    $user_wait_obj->warna2 = $waiting['warna2'];
+                    $user_wait_obj->warna2_hex = $color2_hex;
+                    $user_wait_obj->jumlah_warna2 = $waiting['jumlah_warna2'];
+                    if($user_wait_obj->warna2 != "" && !in_array($user_wait_obj->warna2, $count_color_used)){array_push($count_color_used, $user_wait_obj->warna2);}
+            
+                    $user_wait_obj->warna3 = $waiting['warna3'];
+                    $user_wait_obj->warna3_hex = $color3_hex;
+                    $user_wait_obj->jumlah_warna3 = $waiting['jumlah_warna3'];
+                    if($user_wait_obj->warna3 != "" && !in_array($user_wait_obj->warna3, $count_color_used)){array_push($count_color_used, $user_wait_obj->warna3);}
+            
+                    $user_wait_obj->warna_bg = $waiting['warnaBg'];
+                    $user_wait_obj->warnabg_hex = $colorbg_hex;
+                    $user_wait_obj->jumlah_warnaBg = $waiting['jumlah_warnabg'];
+                    if($user_wait_obj->warna_bg != "" && !in_array($user_wait_obj->warna_bg, $count_color_used)){array_push($count_color_used, $user_wait_obj->warna_bg);}
+            
+                    $user_wait_obj->manufact_duration = $waiting['manufacturing_duration'];
+                    $user_wait_obj->manufact_date = $waiting['manufacturing_date'];
+                    $user_wait_obj->status = $waiting['status'];
+            
+                    $user_wait_obj->last_id_process = $waiting['last_id_in_process']; // id order terakrhi dengan status dalam proses
+                    $user_wait_obj->coloring_method = $waiting['teknik_pewarnaan'];
+                    // Untuk mentrace berapa macam warna yang digunakan oleh pembeli:
+                    $user_wait_obj->num_of_color = count($count_color_used);
+            
+            
+                
+                    $make_json =  json_encode($user_wait_obj);
+            
+                    array_push($user_in_waiting, $make_json);
+                }
+    
+                $color_count_length = count($color_count);
+    
+    
+                return ["motif_jumlah" => $motif_jml, "motif_svg" => $motif_svg, "algoritma_file" => $algoritma_file, "warna_1" => $warna_1, "warna_2" => $warna_2, "warna_3" => $warna_3, "color_count" => $color_count,  "color_count_length" => $color_count_length, "color_design" => $color_design, "user_in_waiting" => $user_in_waiting];
+            } else{
+                return ["motif_jumlah" => $motif_jml, "motif_svg" => $motif_svg, "algoritma_file" => $algoritma_file, "warna_1" => $warna_1, "warna_2" => $warna_2, "warna_3" => $warna_3, "color_count" => null,  "color_count_length" => null, "color_design" => $color_design, "user_in_waiting" => null];
             }
-
-            $color_count_length = count($color_count);
-
-
-            return ["motif_jumlah" => $motif_jml, "motif_svg" => $motif_svg, "algoritma_file" => $algoritma_file, "warna_1" => $warna_1, "warna_2" => $warna_2, "warna_3" => $warna_3, "color_count" => $color_count,  "color_count_length" => $color_count_length, "color_design" => $color_design, "user_in_waiting" => $user_in_waiting];
+    
+                
         }
 
         public function hasilBatikController($customer_id, $customer_type){

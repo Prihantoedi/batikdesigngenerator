@@ -3,20 +3,10 @@
     require('controller/view_controller.php');
 
     if(!isset($_SESSION['username_customer'])){
-        // echo "<script>window.location = 'login.php'</script>";
         header("Location: ". "http://localhost/batikdesigngenerator/login.php");
     }
     $viewController = new ViewController();
     $status_data = $viewController->indexController($_SESSION['id_customer']);    
-    // $test = "absakak";
-
-    // $hashing_sha256 = hash("sha256", $test);
-    // $bycript_hashing = password_hash($hashing_sha256, PASSWORD_DEFAULT);
-
-    // $verifying = password_verify(hash("sha256", "absakak"), $bycript_hashing);
-    // if($verifying){die("Password valid");} else{
-    //     die("Password invalid");
-    // }
 ?>
 
 <!DOCTYPE html>

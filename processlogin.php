@@ -5,12 +5,12 @@
 
 
     if(isset($_POST['submit'])){
-        $username = $_POST['username'];
+        $usermail = $_POST['usermail'];
         $password = $_POST['password'];
 
         $user_enter_act = new UserCommand();
         
-        $user_info = $user_enter_act->loginValidation([$username, $password]);
+        $user_info = $user_enter_act->loginValidation([$usermail, $password]);
 
         foreach($user_info as $name => $val){
             $_SESSION[$name] = $val;

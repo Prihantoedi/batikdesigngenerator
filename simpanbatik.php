@@ -1,8 +1,11 @@
 <?php 
     session_start();
-    
+
+    // function putContents($location, $content){
+    //     return file_put_contents($location, $content);
+    // }
     require 'controller/view_controller.php';
-   
+    
     $warnaBg = $_SESSION['colorBg'];
     $warna1 = $_SESSION['color1'];
     $warna2 = $_SESSION['color2'];
@@ -10,7 +13,7 @@
     $sb_controller = new ViewController();
     $get_result = $sb_controller->simpanBatikController($_SESSION['motif_id'], $warnaBg, $warna1, $warna2, $warna3, $_SESSION["algoritma"]);
 
-    
+    $svgLink = null;
     $colorCount = $get_result['color_count'];
     $colorDesign = $get_result['color_design'];
     $user_in_waiting = $get_result['user_in_waiting'];
@@ -22,8 +25,16 @@
     
     if(isset($_POST['submitsimpan'])){
         
+       
+        
+    
+        // $page = curl_exec($ch);
+
+        // var_dump($page);
+
+        // die($_POST['svgBatik']);
         $_SESSION['svgBatik']  = $_POST['svgBatik'];
-        $_SESSION['svgBatikHp']  = $_POST['svgBatikHp'];
+        // $_SESSION['svgBatikHp']  = $_POST['svgBatikHp'];
         $_SESSION['namakarya'] = htmlspecialchars($_POST['namakarya']);
         $_SESSION['motifJml'] = htmlspecialchars($_POST['motifJml']);
         $_SESSION['jumlah'] = htmlspecialchars($_POST['jumlah']);
@@ -39,6 +50,37 @@
         $_SESSION['add-cost-status'] = ($_POST['add-cost-status']);
         $_SESSION['process-status'] = ($_POST['process-status']);
         $_SESSION['user-waiting'] = $user_in_waiting;
+
+        // $ch = curl_init();
+    
+        // $cookieFile = "/secret/temp/special/res_cook";
+        // curl_setopt($ch, CURLOPT_URL, ("http://localhost/batikdesigngenerator/simpanbatik.php"));
+        // curl_setopt($ch, CURLOPT_POST, count($_POST));
+        // curl_setopt($ch, CURLOPT_POSTFIELDS, $_POST);
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        // curl_setopt($ch, CURLOPT_COOKIEJAR, $cookieFile);
+        // curl_setopt($ch, CURLOPT_COOKIEFILE, $cookieFile);
+
+        // $page = json_decode(curl_exec($ch), true);
+        // $page = curl_exec($ch);
+        // var_dump($page);
+        // $dom = new DOMDocument();
+        // @ $dom->loadHTML($page);
+        // $linkTag = $dom->getElementsByTagName("a");
+        // $linkTag = $dom->getElementById("download-color");
+        // var_dump($page);
+        // echo("Works");
+        // $getColorLink = $linkTag->item(0);
+        // $colorLink = $getColorLink->getAttribute("href");
+        // $getColorLink = $linkTag->item(0);
+        // $linkTag = $dom->getElementsByTagName("a");
+        // foreach($linkTag as $link){
+        //     echo ($link->getAttribute("href"));
+        
+        // }
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
         header('location:.saving.php');
         exit;
     }
@@ -165,7 +207,11 @@
         } ?>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script>
+            var getSess = sessionStorage.getItem("colorBg");
+            console.log(getSess);
+            // console.log($.session.get("algoritma"));
             var widthCanv, heightCanv, paddingTop, paddingSide, obj, obj2, obj3, gap, gapX, gapY,
                 motifJml, motifTagHTML;
             
@@ -225,10 +271,39 @@
 
         exporthasilbatik('hasilbatik');
 
-         var urlSVG = document.getElementById("linkSVG").getAttribute('href');
+        // send url SVG to the session
+        var urlSVG = document.getElementById("linkSVG").getAttribute('href');
+        // console.log(urlSVG);
         document.getElementById('var_svgBatik').value = urlSVG;
+        
+        var nowDate = new Date();
+        var filename = "hbatik_warna" + nowDate.getFullYear()+'_'+(nowDate.getMonth()+1)+'_'+nowDate.getDate() + nowDate.getHours() + "_" + nowDate.getMinutes() + "_" + nowDate.getSeconds() + ".svg";  
+        var path = "hasilbatik/" + filename; 
+
+        // console.log(testing);
+        // fetch("http://localhost/batikdesigngenerator/test.php", {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type" : "application/x-www-form-urlencoded; charset=UTF-8";
+        //     },
+        //     body : `x=${x}&y={y}`, 
+        // }).then((response) => response.text())
+        // .then((res) => (console.log("Success")));
+
+        // file_get_contents like PHP
+        // $.post(urlSVG, { url: url}, function(data){
+        //     trying = data;
+        // });
+
+
+        console.log("yeey");
+
+
+
+
         var urlSVGHp = document.getElementsByTagName('a')[1].getAttribute('href');
         document.getElementById('var_svgBatikHp').value = urlSVGHp;
+        
         
         
       
@@ -255,8 +330,8 @@
                 var from_color_design = num_ordered === "" ? 0 : parseInt(num_ordered); // jumlah orderan yang diinputkan current_user
                 if(num_ordered < 6){ // Apabila jumlah yang dipesan kurang dari 6 , maka dicek akumulasi warna
                     
-                    
-                    if(color_count_db_len > 0){
+                    if(user_waiting !== null){ // bila ada customer dengan status menunggu
+                        if(color_count_db_len > 0){
                         var continue_process = true;
                         var count_continue_process = 0;
                         
@@ -321,7 +396,20 @@
     
                       
 
-                    }   else{
+                        }   else{
+                            var add_cost = document.getElementById("add-cost-desc");
+                            if(from_color_design == 1) {add_cost.innerHTML = "75.000";}
+                            else if(from_color_design == 2){add_cost.innerHTML = "37.500";}
+                            else if(from_color_design == 3){add_cost.innerHTML = "25.000";}
+                            else if(from_color_design == 4){add_cost.innerHTML = "18.750";}
+                            else if(from_color_design == 5){add_cost.innerHTML = "15.000";}
+                            else {add_cost.innerHTML = 0;}
+
+                            var specialCaseModal = document.getElementById("btn-trigger");
+                            specialCaseModal.click(); // asking confirmation => diarahkan ke pertanyaan biaya tambahan
+                        }
+
+                    } else{ // bila tidak ada customer dengan status menunggu
                         var add_cost = document.getElementById("add-cost-desc");
                         if(from_color_design == 1) {add_cost.innerHTML = "75.000";}
                         else if(from_color_design == 2){add_cost.innerHTML = "37.500";}
@@ -332,10 +420,7 @@
 
                         var specialCaseModal = document.getElementById("btn-trigger");
                         specialCaseModal.click(); // asking confirmation => diarahkan ke pertanyaan biaya tambahan
-                    }
-                    
-
-                    
+                    }   
                 } 
 
                 else {  // Bila order lebih dari 5

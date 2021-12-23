@@ -23,8 +23,8 @@
 
                 <!-- Login Form -->
                 <form method="post" action="processlogin.php">
-                    <input type="text" id="username" class="fadeIn second" name="username" placeholder="username" value="">
-                    <input type="password" id="password" class="fadeIn third" name="password" placeholder="password" value="">
+                    <input type="text" id="username" class="fadeIn second" name="usermail" placeholder="Email" value="">
+                    <input type="password" id="password" class="fadeIn third" name="password" placeholder="Password" value="">
                     <input type="submit" name="submit" class="fadeIn fourth" value="Log In">
                 </form>
 
