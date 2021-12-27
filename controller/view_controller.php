@@ -151,9 +151,9 @@
                 $color_count_length = count($color_count);
     
     
-                return ["motif_jumlah" => $motif_jml, "motif_svg" => $motif_svg, "algoritma_file" => $algoritma_file, "warna_1" => $warna_1, "warna_2" => $warna_2, "warna_3" => $warna_3, "color_count" => $color_count,  "color_count_length" => $color_count_length, "color_design" => $color_design, "user_in_waiting" => $user_in_waiting];
+                return ["motif_jumlah" => $motif_jml, "motif_svg" => $motif_svg, "algoritma_file" => $algoritma_file, "warna_1" => $warna_1, "warna_2" => $warna_2, "warna_3" => $warna_3, "warna_bg" => $warna_bg, "color_count" => $color_count,  "color_count_length" => $color_count_length, "color_design" => $color_design, "user_in_waiting" => $user_in_waiting];
             } else{
-                return ["motif_jumlah" => $motif_jml, "motif_svg" => $motif_svg, "algoritma_file" => $algoritma_file, "warna_1" => $warna_1, "warna_2" => $warna_2, "warna_3" => $warna_3, "color_count" => null,  "color_count_length" => null, "color_design" => $color_design, "user_in_waiting" => null];
+                return ["motif_jumlah" => $motif_jml, "motif_svg" => $motif_svg, "algoritma_file" => $algoritma_file, "warna_1" => $warna_1, "warna_2" => $warna_2, "warna_3" => $warna_3, "warna_bg" => $warna_bg, "color_count" => null,  "color_count_length" => null, "color_design" => $color_design, "user_in_waiting" => null];
             }
     
                 
@@ -193,29 +193,56 @@
 
             $hasil_batik = $query->selectQuery($hasil_batik_comment);
 
-            foreach($hasil_batik as $tbl){
-                $hasilbatikId[]  = $tbl['hasilbatik_id'];
-                $file_names[]    = $tbl['hasilbatik_file'];
-                $file_names_hp[] = $tbl['hasilbatik_filehp'];
-                $tanggals  []    = $tbl['hasilbatik_tanggal'];
-                $kreators  []    = $tbl['hasilbatik_kreator'];
-                $namakaryas[]    = $tbl['hasilbatik_namakarya'];
-                $algoritmas[]    = ucwords($tbl['algoritma_nama']);
-                $motifId[]       = cariIdMotifdariHasil($tbl['hasilbatik_id']);
+            $hasil_batik_num = (count($hasil_batik) > 10 ) ? 1 : count($hasil_batik); // bila jumlahnya lebih dari 10, berarti data hasil batik yang diquery cuma 1
+            
+            if($hasil_batik_num == 1){
+                $hasilbatikId[0]  = $hasil_batik['hasilbatik_id'];
+                $file_names[0]    = $hasil_batik['hasilbatik_file'];
+                $file_names_hp[0] = $hasil_batik['hasilbatik_filehp'];
+                $tanggals  [0]    = $hasil_batik['hasilbatik_tanggal'];
+                $kreators  [0]    = $hasil_batik['hasilbatik_kreator'];
+                $namakaryas[0]    = $hasil_batik['hasilbatik_namakarya'];
+                $algoritmas[0]    = ucwords($hasil_batik['algoritma_nama']);
+                $motifId[0]       = cariIdMotifdariHasil($hasil_batik['hasilbatik_id']);
 
-                $jumlah[] = $tbl['jumlahPembelian'];
-                $teknik[] = $tbl['teknik_pewarnaan'];
-                $warna1[] = $tbl['warna1'];
-                $warna2[] = $tbl['warna2'];
-                $warna3[] = $tbl['warna3'];
-                $warnaBg[] = $tbl['warnaBg'];
-                $durasi[] = $tbl['durasi'];
-                $harga[] = $tbl['harga'];
-                $status[] = $tbl['status'];
-                $statusBayar[] = $tbl['status_bayar'];
-                $deliveryTime[] = $tbl['delivery_time'];
+                $jumlah[0] = $hasil_batik['jumlahPembelian'];
+                $teknik[0] = $hasil_batik['teknik_pewarnaan'];
+                $warna1[0] = $hasil_batik['warna1'];
+                $warna2[0] = $hasil_batik['warna2'];
+                $warna3[0] = $hasil_batik['warna3'];
+                $warnaBg[0] = $hasil_batik['warnaBg'];
+                $durasi[0] = $hasil_batik['durasi'];
+                $harga[0] = $hasil_batik['harga'];
+                $status[0] = $hasil_batik['status'];
+                $statusBayar[0] = $hasil_batik['status_bayar'];
+                $deliveryTime[0] = $hasil_batik['delivery_time'];
+            } else{
+                foreach($hasil_batik as $tbl){
+                    $hasilbatikId[]  = $tbl['hasilbatik_id'];
+                    $file_names[]    = $tbl['hasilbatik_file'];
+                    $file_names_hp[] = $tbl['hasilbatik_filehp'];
+                    $tanggals  []    = $tbl['hasilbatik_tanggal'];
+                    $kreators  []    = $tbl['hasilbatik_kreator'];
+                    $namakaryas[]    = $tbl['hasilbatik_namakarya'];
+                    $algoritmas[]    = ucwords($tbl['algoritma_nama']);
+                    $motifId[]       = cariIdMotifdariHasil($tbl['hasilbatik_id']);
+    
+                    $jumlah[] = $tbl['jumlahPembelian'];
+                    $teknik[] = $tbl['teknik_pewarnaan'];
+                    $warna1[] = $tbl['warna1'];
+                    $warna2[] = $tbl['warna2'];
+                    $warna3[] = $tbl['warna3'];
+                    $warnaBg[] = $tbl['warnaBg'];
+                    $durasi[] = $tbl['durasi'];
+                    $harga[] = $tbl['harga'];
+                    $status[] = $tbl['status'];
+                    $statusBayar[] = $tbl['status_bayar'];
+                    $deliveryTime[] = $tbl['delivery_time'];
+                }
             }
-            $hasil_batik_num = count($hasil_batik);
+
+            
+
             if($hasil_batik_num > 0){
                 $order_data = ["hasilbatik_id" => $hasilbatikId, "file_name" => $file_names, "file_name_hp" => $file_names_hp, "tanggal" => $tanggals, "kreator" => $kreators, "nama_karya" => $namakaryas,
                             "algoritma" => $algoritmas, "motif_id" => $motifId, "jumlah" => $jumlah, "teknik" => $teknik, "warna_1" => $warna1, "warna_2" => $warna2, "warna_3" => $warna3, "warna_bg" => $warnaBg, "durasi" => $durasi, "harga" => $harga,
@@ -231,8 +258,7 @@
 
 
             return ["customer_type" => $customer_type, "order_data" => $order_data, "hasil_batik_jum" => $hasil_batik_num];
-           
-            
+
         }
 
 

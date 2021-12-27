@@ -12,8 +12,6 @@
     $warna3 = $_SESSION['color3'];
     $sb_controller = new ViewController();
     $get_result = $sb_controller->simpanBatikController($_SESSION['motif_id'], $warnaBg, $warna1, $warna2, $warna3, $_SESSION["algoritma"]);
-
-    $svgLink = null;
     $colorCount = $get_result['color_count'];
     $colorDesign = $get_result['color_design'];
     $user_in_waiting = $get_result['user_in_waiting'];
@@ -22,16 +20,13 @@
     $motifJml = $get_result['motif_jumlah'];
     $motifSVG = $get_result['motif_svg'];
     $algoritmaFile = $get_result['algoritma_file'];
-    
+
+    $warna1 = $get_result['warna_1'];
+    $warna2 = $get_result['warna_2'];
+    $warna3 = $get_result['warna_3'];
+    $warnaBg = $get_result['warna_bg'];
     if(isset($_POST['submitsimpan'])){
         
-       
-        
-    
-        // $page = curl_exec($ch);
-
-        // var_dump($page);
-
         // die($_POST['svgBatik']);
         $_SESSION['svgBatik']  = $_POST['svgBatik'];
         // $_SESSION['svgBatikHp']  = $_POST['svgBatikHp'];

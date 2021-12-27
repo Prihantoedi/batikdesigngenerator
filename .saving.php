@@ -2,7 +2,7 @@
     session_start();
     require '_functions.php';
     // require 'colortranslate.php';
-    
+
     // Where the file should be saved to
     date_default_timezone_set('Asia/Jakarta');
     $filename ="hbatik_".date('mdY_His').".svg";
@@ -43,7 +43,6 @@
         }
     }
     $getFileContent = $svgDoc->saveXML($svgDoc);
-    
 
     // Save SVG
     file_put_contents($path, file_get_contents($link));
@@ -133,7 +132,7 @@
     $manufacturing_date = $tanggal;
 
 
-
+    
     $conn = mysqli_connect("localhost", "root", "", "database_batik_galih");
 
     $query = "SELECT * FROM harga_mesin WHERE id = 1";
@@ -267,7 +266,7 @@
     $_SESSION['hargaDurasi'] = $hargaDurasi;
     $_SESSION['hargaKain'] = $hargaKain;
     $_SESSION['hasilbatik'] = "0";
-
+    
     // CARI PROCESSING TIME
 
     // Waktu processing time dihitung berdasarkan orderan sebelumnya. Bila orderan sebelumnya.
@@ -284,34 +283,23 @@
     // Variabel process_status  = menentukan status langsung di proses atau masuk dalam daftar tunggu:
     $process_status = $_SESSION['process-status'];
    
-
-
-
-    
     // === SPECIAL CASE ===
     $user_in_waiting = $_SESSION['user-waiting'];
-    
-
-    
-    // mendapatkan data nomer id untuk pesanan saat ini :
-
-    $get_previous_id = "SELECT hasilbatik_id FROM tbl_hasilbatik ORDER BY hasilbatik_id DESC LIMIT 1";
-    $sql = mysqli_query($conn, $get_previous_id) or die(mysqli_error($conn));
-    $previous_id_data = mysqli_fetch_assoc($sql);
-    $current_id = $previous_id_data['hasilbatik_id'] + 1;
-
-    // Mengambil dari database id order terakhir yang dalam status "dalam proses"
-    $get_last_id_process = "SELECT hasilbatik_id FROM tbl_hasilbatik WHERE status = 'dalam proses' ORDER BY hasilbatik_id DESC LIMIT 1";
-    $sql_last_id_process = mysqli_query($conn, $get_last_id_process) or die(mysqli_error($conn));
-    $fetch_last_id_process = mysqli_fetch_assoc($sql_last_id_process);
-    $last_id_process = $fetch_last_id_process['hasilbatik_id'];
-
-
-
     // cek dulu apakah ada jumlah user in waiting (jumlah user yang sedang menunggu status prosesnya karena belum memenuhi)
+   
+    $last_id_process = NULL;
+    if(!empty($user_in_waiting)){ // bila ada user in waiting
+         // mendapatkan data nomer id untuk pesanan saat ini :
+        $get_previous_id = "SELECT hasilbatik_id FROM tbl_hasilbatik ORDER BY hasilbatik_id DESC LIMIT 1";
+        $sql = mysqli_query($conn, $get_previous_id) or die(mysqli_error($conn));
+        $previous_id_data = mysqli_fetch_assoc($sql);
+        $current_id = $previous_id_data['hasilbatik_id'] + 1;
 
-    if(count($user_in_waiting) > 0){ // bila ada user in waiting
-        
+        // Mengambil dari database id order terakhir yang dalam status "dalam proses"
+        $get_last_id_process = "SELECT hasilbatik_id FROM tbl_hasilbatik WHERE status = 'dalam proses' ORDER BY hasilbatik_id DESC LIMIT 1";
+        $sql_last_id_process = mysqli_query($conn, $get_last_id_process) or die(mysqli_error($conn));
+        $fetch_last_id_process = mysqli_fetch_assoc($sql_last_id_process);
+        $last_id_process = $fetch_last_id_process['hasilbatik_id'];
         if($_SESSION['add-cost-status'] == 0){ // bila tidak ada biaya tambahan,
         
             // cek dulu apakah ada user in waiting 
@@ -573,15 +561,51 @@
             if($teknik == "Celup"){
                 $durasiHari = $durasiHari + $dihitung; // == Perhitungan durasi sampai disini ==
             } 
-            
-           
-        
+                
         }
+    } else{
+
+        // bila tidak ada user in waiting
+
+        if($process_status == "dalam process") { // cek apakah statusnya dalam proses ?
+            
+            // Check apakah ada user dalam proses :
+
+            // Mengambil id order terakhir dengan status dalam proses
+            $query = "SELECT * FROM tbl_hasilbatik WHERE status = 'dalam proses' ORDER BY hasilbatik_id DESC LIMIT 1"; // ini harus sesudah order sebelumnya yang masih status tunggu update ke "dalam proses"
+            
+            $sql = mysqli_query($conn, $query) or die(mysqli_error($conn));
+            
+            $dataSebelumnya = mysqli_fetch_assoc($sql);
+
+            if(!empty($dataSebelumnya)){ // jika ada user sebelumnya dengan status dalam proses
+
+                // hitung selish dengan user sebelumnya untuk mendapatkan durasi hari
+                $tanggalSebelumnya = $dataSebelumnya['hasilbatik_tanggal'];
+                $durasiSebelumnya = $dataSebelumnya['durasi'];
+                
+            
+                $tanggalSebelumnya = date_create($tanggalSebelumnya);
+                $tanggalFormat = date_create($tanggal);
+            
+                $interval = $tanggalFormat->diff($tanggalSebelumnya)->days;
+            
+                if($interval <= $durasiSebelumnya){
+                    $durasiHari= $durasiHari + ($durasiSebelumnya - $interval);
+                }
+            
+                // tambahan durasi untuk teknik celup
+                if($teknik == "Celup"){
+                    $durasiHari = $durasiHari + $dihitung; // == Perhitungan durasi sampai disini ==
+                } 
+            }
+        } 
+
     }
 
 
     
-
+    
     $_SESSION['durasi'] = $process_status == "dalam proses" ? $durasiHari. " hari" : "menunggu order selanjutnya";
     // $_SESSION['durasi'] = $durasiHari . " hari"; 
 
@@ -614,33 +638,48 @@
     
 
     // Menginputkan seluruh data ke tbl_hatilbatik database
-    $query = "INSERT INTO tbl_hasilbatik VALUES (
-        '$karakter_id', '$filename', '$filenameHp', '$tanggal', '$kreator', '$namakarya', 
-        '$algoritma', '$jmlmotif', '$widthCanv', '$heightCanv', 
-        '$paddingTop', '$paddingSide', '$gap', '$gapX', '$gapY', 
-        '$jumlah', '$jenisTeknik', '$jenisWarna1', $jumlah_warna1, '$jenisWarna2', 
-        $jumlah_warna2, '$jenisWarna3', $jumlah_warna3, '$jenisWarnabg', $jumlah_warnabg, 
-        $durasiHari, $manufacturing_duration, '$manufacturing_date', $harga, '$process_status', 'belum', $idCustomer, $delTime,
-        $last_id_process
-    )";
+
+    if(is_null($last_id_process)){
+        $query = "INSERT INTO tbl_hasilbatik VALUES (
+            '$karakter_id', '$filename', '$filenameHp', '$tanggal', '$kreator', '$namakarya', 
+            '$algoritma', '$jmlmotif', '$widthCanv', '$heightCanv', 
+            '$paddingTop', '$paddingSide', '$gap', '$gapX', '$gapY', 
+            '$jumlah', '$jenisTeknik', '$jenisWarna1', $jumlah_warna1, '$jenisWarna2', 
+            $jumlah_warna2, '$jenisWarna3', $jumlah_warna3, '$jenisWarnabg', $jumlah_warnabg, 
+            $durasiHari, $manufacturing_duration, '$manufacturing_date', $harga, '$process_status', 'belum', $idCustomer, $delTime,
+            NULL
+        )";
+    }else {
+        $query = "INSERT INTO tbl_hasilbatik VALUES (
+            '$karakter_id', '$filename', '$filenameHp', '$tanggal', '$kreator', '$namakarya', 
+            '$algoritma', '$jmlmotif', '$widthCanv', '$heightCanv', 
+            '$paddingTop', '$paddingSide', '$gap', '$gapX', '$gapY', 
+            '$jumlah', '$jenisTeknik', '$jenisWarna1', $jumlah_warna1, '$jenisWarna2', 
+            $jumlah_warna2, '$jenisWarna3', $jumlah_warna3, '$jenisWarnabg', $jumlah_warnabg, 
+            $durasiHari, $manufacturing_duration, '$manufacturing_date', $harga, '$process_status', 'belum', $idCustomer, $delTime,
+            $last_id_process
+        )";
+    }
+
 
 
     mysqli_query($conn, $query) or die(mysqli_error($conn));
+    
     $karakter_id = mysqli_insert_id($conn);
 
     $i = 1;
     $_SESSION['obj1'] = $_SESSION['obj'];
     
     foreach($_SESSION['motif_id'] as $mtf){
-        $motif_id = $mtf;
-        $urutan_motif = $i;
-        $ukuran_motif = $_SESSION['obj'.$i++];
+            $motif_id = $mtf;
+            $urutan_motif = $i;
+            $ukuran_motif = $_SESSION['obj'.$i++];
 
-    $query = "INSERT INTO jtbl_hasilbatik_motif VALUES (
-                    '$karakter_id', '$motif_id', '$urutan_motif', '$ukuran_motif'       
-            )";
+        $query = "INSERT INTO jtbl_hasilbatik_motif VALUES (
+                        '$karakter_id', '$motif_id', '$urutan_motif', '$ukuran_motif'       
+                )";
 
-    mysqli_query($conn, $query);
+        mysqli_query($conn, $query);
     }
 
 
@@ -650,20 +689,7 @@
         echo "Error: " . $query . "<br>" . mysqli_error($conn);
     }
     
-    // header('location:hasilbatik.php?id=' . $idCustomer);
-    // exit;  
+    header('location:hasilbatik.php?id=' . $idCustomer);
+    exit;  
 
  ?>
-
- <!DOCTYPE html>
- <html lang="en">
- <head>
-     <meta charset="UTF-8">
-     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>Processing</title>
- </head>
- <body>
-     <script></script>
- </body>
- </html>
