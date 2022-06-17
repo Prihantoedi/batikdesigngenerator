@@ -49,9 +49,10 @@
             
             
             $take_user_email = mysqli_query($conn, "SELECT * FROM customers WHERE email = '$user_email'") or die(mysqli_error($conn));
-            // $fetch_data = mysqli_fetch_assoc($take_user_email);
-            // $take_pass = $fetch_data["password"];
-            if($user_password == $take_user_email ){
+            
+            $fetch_data = mysqli_fetch_assoc($take_user_email);
+            $take_pass = $fetch_data["password"];
+            if($user_password == $take_pass ){
             
                     $get_data = array();
                     $get_data = ["id_customer" => $fetch_data['id'], "nama_customer" => $fetch_data['nama'], "no_telp" => $fetch_data['no_telp'],
