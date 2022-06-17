@@ -92,7 +92,7 @@ function batikCreate(widthCanv, heightCanv, paddingTop, paddingSide, obj, obj2, 
     } else{
         LapisanMotif = Math.ceil( ( ((heightCanv - paddingTop) / objectnyay) - 1 ) / 4 );
     } 
-    
+    console.log(LapisanMotif);
     // Iterasi Motif Kotak
     motifCreate(x,y,gTrans, motif, firstColorVal)
     if (isSave){motifCreate2(x,y,gTrans, motif);}

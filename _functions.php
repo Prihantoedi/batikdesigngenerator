@@ -60,6 +60,15 @@ function cariMotif($keyword){
 	return $rows;
 }
 
+function cariIdMotifdariHasil($hasilbatik_id){
+	$query = "SELECT motif_id FROM jtbl_hasilbatik_motif
+			INNER JOIN tbl_hasilbatik ON jtbl_hasilbatik_motif.hasilbatik_id = tbl_hasilbatik.hasilbatik_id
+			WHERE jtbl_hasilbatik_motif.hasilbatik_id = '$hasilbatik_id'
+			";
+	$rows =  query($query);
+	return $rows;	
+}
+
 // Search karakter dari motif
 function cariKarakterMotif($id){
 	$query = "SELECT tbl_karakter.karakter_nama FROM jtbl_motif_karakter
@@ -73,15 +82,6 @@ function cariKarakterMotif($id){
         $li[] = $list['karakter_nama'];
 	}
 	return $li;
-}
-
-function cariIdMotifdariHasil($hasilbatik_id){
-	$query = "SELECT motif_id FROM jtbl_hasilbatik_motif
-			INNER JOIN tbl_hasilbatik ON jtbl_hasilbatik_motif.hasilbatik_id = tbl_hasilbatik.hasilbatik_id
-			WHERE jtbl_hasilbatik_motif.hasilbatik_id = '$hasilbatik_id'
-			";
-	$rows =  query($query);
-	return $rows;	
 }
 
 function cariKarakterMotifBanyak($mtfId){
@@ -210,6 +210,7 @@ function algorithmSwitch($algoritma,$motifJml){
 // konversi warna ke heksadesimal dan sebaliknya
 
 function hexToColor($hexadecimal){
+	$result = null;
 	switch($hexadecimal){
 		case null:
 			$result = null;
@@ -250,6 +251,7 @@ function hexToColor($hexadecimal){
 }
 
 function colorToHex($color){
+	$result = null;
 	switch($color){
 		case null:
 			$result = null;
@@ -263,8 +265,8 @@ function colorToHex($color){
 		case "Yellow IRK":
 			$result = "#7f732a";
 			break;
-		case "#b23424":
-			$result = "Orange HR";
+		case "Orange HR":
+			$result = "#b23424";
 			break;
 		case "Brown IRRD":
 			$result = "#7a5844";

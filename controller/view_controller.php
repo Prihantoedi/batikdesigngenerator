@@ -75,13 +75,12 @@
 
             // Mencari user yang memiliki status daftar tunggu, dan menghitung akumulasi warna yang sama digunakan
 
-            $waiting_list = $query->selectQuery("SELECT * FROM tbl_hasilbatik WHERE status = 'daftar tunggu' ");
+            $waiting_list = $query->selectQuery("SELECT * FROM tbl_hasilbatik WHERE status = 'daftar tunggu' ", True);
 
             
             if(count($waiting_list) > 0){
                 $color_count = array();
                 $user_in_waiting = array();
-                
                 // untuk status user yang masih di daftar tunggu, data yang dibutuhkan adalah:
                 // hasilbatik_id, warna1, jumlah warna1, warna2, jumlah warna2, warna3, jumlah warna3, warna background, jumlah warna background-
                 // dan id orderan terakhir yang sudah masuk dalam process (last_id_in_process);
@@ -104,34 +103,79 @@
                     if(array_key_exists($color3_hex, $color_count)){ $color_count[$color3_hex] = $color_count[$color3_hex] + $waiting["jumlah_warna3"];}
                     else $color_count[$color3_hex] = $waiting["jumlah_warna3"];
             
-                    if(array_key_exists($colorbg_hex, $color_count)){ $color_count[$colorbg_hex] = $color_count[$colorbg_hex] + $waiting["jumlah_warnabg"];}
-                    else $color_count[$colorbg_hex] = $waiting["jumlah_warnabg"];
+                    if(array_key_exists($colorbg_hex, $color_count)){ $color_count[$colorbg_hex] = $color_count[$colorbg_hex] + $waiting["jumlah_warnaBg"];}
+                    else $color_count[$colorbg_hex] = $waiting["jumlah_warnaBg"];
             
                     // proses menampung semua user yang masih status tunggu:
                     $user_wait_obj = new stdClass();
                     $user_wait_obj->id_order= $waiting['hasilbatik_id'];
                     $count_color_used = [];
-            
+                    
+                    
+                    // pengecekkan ada berapa warna yang digunakan masing masing user in waiting
+                    // semuanya ditampung di variabel count_color_used
                     $user_wait_obj->warna1 = $waiting['warna1'];
                     $user_wait_obj->warna1_hex = $color1_hex;
                     $user_wait_obj->jumlah_warna1 = $waiting['jumlah_warna1'];
-                    if($user_wait_obj->warna1 != "" && !in_array($user_wait_obj->warna1, $count_color_used)){array_push($count_color_used, $user_wait_obj->warna1);}
-            
+
+                    
+                    // kondisi 1: pastikan user_wait_obj warnanya ada isinya, bukan string kosong
+                    // kondisi 2: pastikan warna1 belum ada di array count_color_used
+                    if($user_wait_obj->warna1 != "" && !in_array($user_wait_obj->warna1, $count_color_used)){
+                        array_push($count_color_used, $user_wait_obj->warna1);    
+                    }
+
+                    // Penting: bila ada warna dari user in waiting yang tidak cocok / tidak sama dengan current user, continue loop
+                    // Karena pasti warna yang beda dari user in waiting tetap tidak bisa ikut dihitung
+                    // sebagai contoh, bila current user punya warna a,b,c.
+                    // user in waiting punya warna a,c,e
+                    // maka kalo ini tetap masuk perhitungan dan apabila batch warna memenuhi dengan mengabaikan warna e, maka current user tidak akan ditagih biaya tambahan (dapat diproses)
+                    // sementara seharusnya user in waiting yang punya warna a,c,e tidak bisa di proses karena yang e belum memenuhi
+                    // maka dilakukan pengecekkan apakah user in waiting punya warna yang sama dengan current user? Kalau tidak sama loop di continue, abaikan user in waiting yang sementara dalam loop
+                    // pengecekkan dilakukan berdasarkan elemen yang ada di array $color_design
+                   
+                    if(!in_array($user_wait_obj->warna1_hex, $color_design) && $user_wait_obj->warna1_hex != NULL){
+                        continue;
+                    }
+
                     $user_wait_obj->warna2 = $waiting['warna2'];
                     $user_wait_obj->warna2_hex = $color2_hex;
                     $user_wait_obj->jumlah_warna2 = $waiting['jumlah_warna2'];
                     if($user_wait_obj->warna2 != "" && !in_array($user_wait_obj->warna2, $count_color_used)){array_push($count_color_used, $user_wait_obj->warna2);}
+                    
+                    if(!in_array($user_wait_obj->warna2_hex, $color_design) && $user_wait_obj->warna2_hex != NULL){
+                        continue;
+                    }
+
+                    
             
                     $user_wait_obj->warna3 = $waiting['warna3'];
                     $user_wait_obj->warna3_hex = $color3_hex;
                     $user_wait_obj->jumlah_warna3 = $waiting['jumlah_warna3'];
                     if($user_wait_obj->warna3 != "" && !in_array($user_wait_obj->warna3, $count_color_used)){array_push($count_color_used, $user_wait_obj->warna3);}
-            
+                    
+                    
+
+                    if(!in_array($user_wait_obj->warna3_hex, $color_design) && $user_wait_obj->warna3_hex != NULL){
+                        continue;
+                    }
+                    
+
+                    
+
                     $user_wait_obj->warna_bg = $waiting['warnaBg'];
                     $user_wait_obj->warnabg_hex = $colorbg_hex;
-                    $user_wait_obj->jumlah_warnaBg = $waiting['jumlah_warnabg'];
+                    $user_wait_obj->jumlah_warnaBg = $waiting['jumlah_warnaBg'];
                     if($user_wait_obj->warna_bg != "" && !in_array($user_wait_obj->warna_bg, $count_color_used)){array_push($count_color_used, $user_wait_obj->warna_bg);}
-            
+                    
+                    if(!in_array($user_wait_obj->warnabg_hex, $color_design) && $user_wait_obj->warnabg_hex != NULL){
+                        continue;
+                    }
+
+                    // if($waiting['hasilbatik_id'] == 1){
+                    //     die(print_r($count_color_used));
+                    // }
+
                     $user_wait_obj->manufact_duration = $waiting['manufacturing_duration'];
                     $user_wait_obj->manufact_date = $waiting['manufacturing_date'];
                     $user_wait_obj->status = $waiting['status'];
@@ -139,9 +183,17 @@
                     $user_wait_obj->last_id_process = $waiting['last_id_in_process']; // id order terakrhi dengan status dalam proses
                     $user_wait_obj->coloring_method = $waiting['teknik_pewarnaan'];
                     // Untuk mentrace berapa macam warna yang digunakan oleh pembeli:
+                    
+                    $actual_color = [];
+
+                    foreach($count_color_used as $color_used){
+                        array_push($actual_color, colorToHex($color_used));
+                    }
+                    
+                    $user_wait_obj->actual_color_used = $actual_color; // warna2 yang sebenarnya digunakan user in waiting, mengabaikan warna yang sama dalam user in waiting
+                    
+                    
                     $user_wait_obj->num_of_color = count($count_color_used);
-            
-            
                 
                     $make_json =  json_encode($user_wait_obj);
             
@@ -150,7 +202,7 @@
     
                 $color_count_length = count($color_count);
     
-    
+            
                 return ["motif_jumlah" => $motif_jml, "motif_svg" => $motif_svg, "algoritma_file" => $algoritma_file, "warna_1" => $warna_1, "warna_2" => $warna_2, "warna_3" => $warna_3, "warna_bg" => $warna_bg, "color_count" => $color_count,  "color_count_length" => $color_count_length, "color_design" => $color_design, "user_in_waiting" => $user_in_waiting];
             } else{
                 return ["motif_jumlah" => $motif_jml, "motif_svg" => $motif_svg, "algoritma_file" => $algoritma_file, "warna_1" => $warna_1, "warna_2" => $warna_2, "warna_3" => $warna_3, "warna_bg" => $warna_bg, "color_count" => null,  "color_count_length" => null, "color_design" => $color_design, "user_in_waiting" => null];

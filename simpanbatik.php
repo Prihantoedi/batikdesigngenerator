@@ -15,6 +15,7 @@
     $colorCount = $get_result['color_count'];
     $colorDesign = $get_result['color_design'];
     $user_in_waiting = $get_result['user_in_waiting'];
+    // die(print_r($user_in_waiting));
     $colorCountLength = $get_result['color_count_length']; // for Javascript
     
     $motifJml = $get_result['motif_jumlah'];
@@ -27,9 +28,6 @@
     $warnaBg = $get_result['warna_bg'];
     if(isset($_POST['submitsimpan'])){
         
-        // die($_POST['svgBatik']);
-        $_SESSION['svgBatik']  = $_POST['svgBatik'];
-        // $_SESSION['svgBatikHp']  = $_POST['svgBatikHp'];
         $_SESSION['namakarya'] = htmlspecialchars($_POST['namakarya']);
         $_SESSION['motifJml'] = htmlspecialchars($_POST['motifJml']);
         $_SESSION['jumlah'] = htmlspecialchars($_POST['jumlah']);
@@ -46,36 +44,59 @@
         $_SESSION['process-status'] = ($_POST['process-status']);
         $_SESSION['user-waiting'] = $user_in_waiting;
 
-        // $ch = curl_init();
-    
-        // $cookieFile = "/secret/temp/special/res_cook";
-        // curl_setopt($ch, CURLOPT_URL, ("http://localhost/batikdesigngenerator/simpanbatik.php"));
-        // curl_setopt($ch, CURLOPT_POST, count($_POST));
-        // curl_setopt($ch, CURLOPT_POSTFIELDS, $_POST);
-        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        // curl_setopt($ch, CURLOPT_COOKIEJAR, $cookieFile);
-        // curl_setopt($ch, CURLOPT_COOKIEFILE, $cookieFile);
-
-        // $page = json_decode(curl_exec($ch), true);
-        // $page = curl_exec($ch);
-        // var_dump($page);
-        // $dom = new DOMDocument();
-        // @ $dom->loadHTML($page);
-        // $linkTag = $dom->getElementsByTagName("a");
-        // $linkTag = $dom->getElementById("download-color");
-        // var_dump($page);
-        // echo("Works");
-        // $getColorLink = $linkTag->item(0);
-        // $colorLink = $getColorLink->getAttribute("href");
-        // $getColorLink = $linkTag->item(0);
-        // $linkTag = $dom->getElementsByTagName("a");
-        // foreach($linkTag as $link){
-        //     echo ($link->getAttribute("href"));
+        // Where the file should be saved to
+        date_default_timezone_set('Asia/Jakarta');
+        $filename ="hbatik_".date('mdY_His').".svg";
+        $filenameHp = "hbatik_Hp_".date('mdY_His').".svg";
+        $path = "hasilbatik/".$filename; //hbatik_".date('mdY_His').".svg"; 
+        $pathHp = "hasilbatik/".$filenameHp;
         
-        // }
-        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
+        // Save to Session
+        
+        $_SESSION['filename'] = htmlspecialchars($filename);
+        $_SESSION['filename-hp'] = htmlspecialchars($filenameHp);
+        
+        // Download link
+        $link = $_POST['svgBatik'];
+        $jmlmotif = $_POST['motifJml'];
+    
+    
+        $motifClass = $jmlmotif == "1" ? ["first-motif"] : ($jmlmotif == "2" ? ["first-motif", "second-motif"] : ["first-motif", "second-motif", "third-motif"]);
+    
+        // Konversi file motif warna ke hitam putih
+        $getFileContent = file_get_contents($link);
+        
+        $svgDoc = new DOMDocument();
+        $svgDoc->loadXML($getFileContent);
+    
+        $svgDoc->preserveWhiteSpace = false;
+        $xpath = new DOMXPath($svgDoc);
+        $xpath->registerNamespace('svg','http://www.w3.org/2000/svg');
+    
+        // Merubah warna kanvas ke putih
+    
+        $get_canvas = $xpath->query("//svg:rect");
+        if($get_canvas){
+            $get_canvas[0]->setAttribute("style", "fill: white");
+        } else{
+            "something wrong happen, please check again your input !!!";
+        }
+    
+        // merubah warna motif dari berwarna ke hitam putih
+        foreach($motifClass as $mc){
+            $get_motif = $xpath->query("//svg:g[@class='" .$mc."']");
+            foreach($get_motif as $gm){
+                $gm->setAttribute("fill", "#000000");
+            }
+        }
+        $getFileContent = $svgDoc->saveXML($svgDoc);
+    
+        
+        // Save SVG Color
+        file_put_contents($path, file_get_contents($link));
+    
+        // Save SVG Hitam putih
+        file_put_contents($pathHp, $getFileContent);
         header('location:.saving.php');
         exit;
     }
@@ -124,8 +145,6 @@
         <button type="submit" name="submitsimpan" id="saveButton" onclick="return confirm('Apakah data yg anda inputkan sudah sesuai?')" hidden>Simpan Batik</button>
         <div name="dummySave" id="dummy-save">Simpan Batik</div>
         <input type="hidden" name="svgBatik"        id="var_svgBatik"        value="">
-
-        <input type="hidden" name="svgBatikHp"      id="var_svgBatikHp"      value="">
         
         <input type="hidden" name="warna1"          id="warna-1"             value="<?php echo $warna1; ?>" >
         <input type="hidden" name="warna2"          id="warna-2"             value="<?php echo $warna2; ?>" >
@@ -297,7 +316,7 @@
 
 
         var urlSVGHp = document.getElementsByTagName('a')[1].getAttribute('href');
-        document.getElementById('var_svgBatikHp').value = urlSVGHp;
+        // document.getElementById('var_svgBatikHp').value = urlSVGHp;
         
         
         
@@ -327,67 +346,72 @@
                     
                     if(user_waiting !== null){ // bila ada customer dengan status menunggu
                         if(color_count_db_len > 0){
-                        var continue_process = true;
-                        var count_continue_process = 0;
-                        
-                        var accumulation_color = {}; // menampung warna jumlah warna dari user yang sedang mendesain
-                        for(const c in  color_design){
-                            accumulation_color[color_design[c]] = from_color_design;
-                        }
-
-                        
-                        // meng-iterasi seluruh user waiting untuk dilihat penggunaan warnanya, kemudian dicocokkan jumlahnya dengan user yang sedang mendesain
-                        for(const element in user_waiting){
-                            var json_colnum = JSON.parse(user_waiting[element]);
-                    
-
+                            var continue_process = true;
+                            var count_continue_process = 0;
                             
-                            var hex_color_user_waiting = [json_colnum['warna1_hex'], json_colnum['warna2_hex'], json_colnum['warna3_hex'], json_colnum['warnabg_hex'] ]
-                            
-                    
-                            let get_color_num = json_colnum['num_of_color'];
-                            
-                            var dictionary = {"warna1_hex" : "jumlah_warna1", "warna2_hex" : "jumlah_warna2", "warna3_hex" : "jumlah_warna3", "warnabg_hex": "jumlah_warnaBg"};
-      
- 
-                            if(get_color_num == color_design.length){ // jumlah warna yang digunakan user waiting sama current user sama?
-                                var count_user = 0;
-                                for(const hex_ele in hex_color_user_waiting){
-                                    if(color_design.includes(hex_color_user_waiting[hex_ele]) && hex_color_user_waiting[hex_ele] != null){ 
-                                        var get_key_color = Object.keys(json_colnum).find(key=>json_colnum[key] === hex_color_user_waiting[hex_ele]); // mengambil key dari jsoncolnunm : warna heksadesimal
-                                        var what_color =  dictionary[get_key_color]; // ambil nilai dari dictionary berdasarkan key
-                                        var get_num_color = json_colnum[what_color];
-                                        get_num_color = parseInt(get_num_color); 
-                                        accumulation_color[hex_color_user_waiting[hex_ele]] = accumulation_color[hex_color_user_waiting[hex_ele]] + get_num_color;  // menghitung akumulasi warna yang sama digunakan
-                                        count_user++;
-                                    }
-                                }
-                    
+                            var accumulation_color = {}; // menampung warna jumlah warna dari user yang sedang mendesain
+                            for(const c in  color_design){
+                                accumulation_color[color_design[c]] = from_color_design;
                             }
-                        }
+                            
+                            console.log(accumulation_color);
+                            
+                            
+                            // meng-iterasi seluruh user waiting untuk dilihat penggunaan warnanya, kemudian dicocokkan jumlahnya dengan user yang sedang mendesain
+                            for(const element in user_waiting){
+                                var json_colnum = JSON.parse(user_waiting[element]);
+                        
 
-                        for(const property in accumulation_color){
-                            if(accumulation_color[property] < 6){continue_process = false; break;}
-                        }
+                                console.log(json_colnum['id_order']);
+                                console.log(json_colnum['num_of_color']);
+                                // var hex_color_user_waiting = [json_colnum['warna1_hex'], json_colnum['warna2_hex'], json_colnum['warna3_hex'], json_colnum['warnabg_hex'] ]
+                                var hex_color_user_waiting = json_colnum['actual_color_used'];
+                        
+                                let get_color_num = json_colnum['num_of_color'];
+                                
+                                var dictionary = {"warna1_hex" : "jumlah_warna1", "warna2_hex" : "jumlah_warna2", "warna3_hex" : "jumlah_warna3", "warnabg_hex": "jumlah_warnaBg"};
+                        
+                               
+                                if(get_color_num <= color_design.length){ // jumlah warna yang digunakan user waiting sama current user sama?
+                                    var count_user = 0;
+                                    for(const hex_ele in hex_color_user_waiting){
+                                        if(color_design.includes(hex_color_user_waiting[hex_ele]) && hex_color_user_waiting[hex_ele] != null){ 
+                                            var get_key_color = Object.keys(json_colnum).find(key=>json_colnum[key] === hex_color_user_waiting[hex_ele]); // mengambil key dari jsoncolnunm : value nya warna heksadesimal, keynya contoh warna1_hex
+                                            var what_color =  dictionary[get_key_color]; // ambil nilai dari dictionary berdasarkan key, diambil value string, misalkan : "jumlah_warna1"
+                                            var get_num_color = json_colnum[what_color]; // diambil jumlahnya dari json_colnum["jumlah_warna1"]
+                                            get_num_color = parseInt(get_num_color); // di salin ke int
+                                            accumulation_color[hex_color_user_waiting[hex_ele]] = accumulation_color[hex_color_user_waiting[hex_ele]] + get_num_color;  // menghitung akumulasi warna yang sama digunakan
+                                            count_user++;
+                                        }
+                                    }
+                        
+                                }
+                            }
 
-                        // cek apakah ada total penggunaan warna kurang dari 6 ? 
-                        if(!continue_process){
+                            console.log(accumulation_color);
 
-                            var add_cost = document.getElementById("add-cost-desc");
-                            if(from_color_design == 1) {add_cost.innerHTML = "75.000";}
-                            else if(from_color_design == 2){add_cost.innerHTML = "37.500";}
-                            else if(from_color_design == 3){add_cost.innerHTML = "25.000";}
-                            else if(from_color_design == 4){add_cost.innerHTML = "18.750";}
-                            else if(from_color_design == 5){add_cost.innerHTML = "15.000";}
-                            else {add_cost.innerHTML = 0;}
+                            for(const property in accumulation_color){
+                                if(accumulation_color[property] < 6){continue_process = false; break;}
+                            }
 
-                            var specialCaseModal = document.getElementById("btn-trigger");
-                            specialCaseModal.click(); // asking confirmation
-                    
-                        } else{
-                            var saveBtn = document.getElementById("saveButton");
-                            saveBtn.click();
-                        }
+                            // cek apakah ada total penggunaan warna kurang dari 6 ? 
+                            if(!continue_process){
+
+                                var add_cost = document.getElementById("add-cost-desc");
+                                if(from_color_design == 1) {add_cost.innerHTML = "75.000";}
+                                else if(from_color_design == 2){add_cost.innerHTML = "37.500";}
+                                else if(from_color_design == 3){add_cost.innerHTML = "25.000";}
+                                else if(from_color_design == 4){add_cost.innerHTML = "18.750";}
+                                else if(from_color_design == 5){add_cost.innerHTML = "15.000";}
+                                else {add_cost.innerHTML = 0;}
+
+                                var specialCaseModal = document.getElementById("btn-trigger");
+                                specialCaseModal.click(); // asking confirmation
+                        
+                            } else{
+                                var saveBtn = document.getElementById("saveButton");
+                                saveBtn.click();
+                            }
     
                       
 
@@ -476,8 +500,11 @@
 
             // keliling motif
             var getPath = motifSample.getElementsByTagName("path")[0];
+            console.log(getPath);
             var bboxWidth = motifSample.getBBox().width;
             var bcWidth = getPath.getBoundingClientRect().width;
+            console.log(bboxWidth);
+            console.log(bcWidth);
 
             var scaleNum = bcWidth / bboxWidth;
 
